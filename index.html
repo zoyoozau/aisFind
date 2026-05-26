@@ -987,6 +987,182 @@
       transform: rotate(30deg);
     }
 
+    /* ─── DELETE BUTTON & MODAL & SWIPE TO DELETE ──────────────── */
+    .action-cell {
+      text-align: right;
+      width: 80px;
+    }
+    
+    .btn-delete-row {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-delete-row:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+    
+    .confirm-modal-card {
+      max-width: 400px;
+      width: calc(100% - 32px);
+      background: var(--bg-modal);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--modal-shadow);
+      border-radius: 24px;
+      padding: 2rem;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    
+    .modal-overlay.active .confirm-modal-card {
+      transform: scale(1);
+    }
+    
+    .confirm-modal-icon {
+      background: rgba(239, 68, 68, 0.1);
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem auto;
+      color: var(--danger);
+    }
+    
+    .confirm-modal-icon i {
+      font-size: 1.8rem;
+    }
+    
+    .confirm-modal-title {
+      font-family: var(--font-outfit);
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+    
+    .confirm-modal-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+    
+    .confirm-modal-number {
+      font-family: var(--font-outfit);
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--text-main);
+      background: var(--stat-card-bg);
+      border: 1px dashed var(--border-color);
+      padding: 8px 16px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-top: 6px;
+      letter-spacing: 0.05em;
+    }
+    
+    .confirm-btn-group {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .btn-confirm-delete {
+      flex: 1;
+      background: var(--danger);
+      color: #fff;
+      font-family: var(--font-outfit);
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px var(--danger-glow);
+    }
+    
+    .btn-confirm-delete:hover {
+      background: #dc2626;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-confirm-cancel {
+      flex: 1;
+      background: var(--btn-icon-bg);
+      color: var(--text-main);
+      font-family: var(--font-outfit);
+      font-size: 1rem;
+      font-weight: 600;
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    
+    .btn-confirm-cancel:hover {
+      background: var(--btn-icon-bg-hover);
+    }
+
+    .history-table td {
+      padding: 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .swipe-row {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .swipe-wrapper {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      box-sizing: border-box;
+      background: transparent;
+      z-index: 2;
+      position: relative;
+    }
+    
+    .swipe-info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+    
+    .swipe-timestamp-col {
+      flex: 1.2;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    
+    .swipe-action-col {
+      width: 80px;
+      text-align: right;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .show-on-mobile {
+      display: none !important;
+    }
+
     /* ─── MOBILE RESPONSIVE UI/UX OPTIMIZATIONS ──────────────── */
     @media (max-width: 600px) {
       .app-container {
@@ -1051,12 +1227,85 @@
         height: 16px;
       }
       
-      .history-table th, 
-      .history-table td {
-        padding: 10px 8px;
-        font-size: 0.8rem;
+      .history-table thead {
+        display: none !important;
       }
       
+      .history-table, 
+      .history-table tbody {
+        display: block !important;
+        width: 100% !important;
+      }
+      
+      .history-table tbody tr {
+        display: block !important;
+        position: relative !important;
+        width: 100% !important;
+        margin-bottom: 10px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        overflow: hidden;
+        touch-action: pan-y;
+        height: 68px;
+      }
+      
+      .history-table tbody tr td {
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      
+      .swipe-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        background: var(--bg-card);
+        z-index: 2;
+        transition: transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);
+        box-sizing: border-box;
+      }
+      
+      .swipe-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+      }
+      
+      .swipe-delete-action {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 80px;
+        height: 100%;
+        background: var(--danger);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 1;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+        box-shadow: inset 5px 0 10px rgba(0, 0, 0, 0.1);
+        gap: 4px;
+      }
+      
+      .swipe-delete-action i {
+        width: 18px;
+        height: 18px;
+      }
+
       .history-number {
         font-size: 0.95rem;
       }
@@ -1225,8 +1474,8 @@
                 <thead>
                   <tr>
                     <th>หมายเลข 10 หลัก</th>
-                    <th>วันที่ - เวลาบันทึก</th>
-                    <th>สถานะ</th>
+                    <th class="hide-on-mobile">วันที่ - เวลาบันทึก</th>
+                    <th class="action-cell hide-on-mobile">จัดการ</th>
                   </tr>
                 </thead>
                 <tbody id="history-tbody">
@@ -1430,6 +1679,29 @@
     </div>
   </div>
 
+  <!-- ─── OVERLAY MODAL: DELETE CONFIRMATION ────────────────── -->
+  <div id="delete-confirm-modal" class="modal-overlay" onclick="closeDeleteModalOnOverlay(event)">
+    <div class="confirm-modal-card">
+      <div class="confirm-modal-icon">
+        <i data-lucide="trash-2"></i>
+      </div>
+      <h3 class="confirm-modal-title">ยืนยันการลบข้อมูล</h3>
+      <div class="confirm-modal-desc">
+        คุณต้องการลบข้อมูลลูกค้ารายนี้ออกจากระบบหรือไม่?
+        <br>
+        <span id="delete-confirm-number" class="confirm-modal-number">000-000-0000</span>
+      </div>
+      
+      <div class="confirm-btn-group">
+        <button class="btn-confirm-cancel" onclick="closeDeleteModal()">ยกเลิก</button>
+        <button id="btn-confirm-delete-submit" class="btn-confirm-delete" onclick="executeDeleteRow()">
+          <i data-lucide="trash-2"></i>
+          ยืนยันการลบ
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST ALERTS OVERLAY -->
   <div id="toast-container"></div>
 
@@ -1447,7 +1719,8 @@
     const STATE = {
       currentUser: null,  // { username, name }
       apiUrl: localStorage.getItem('aisFix_api_url') || 'https://script.google.com/macros/s/AKfycbxKx2OBL7kC1450n0fSSTzY9oZaViSefZCqisKcecM66QWANw3OZYxV6NfgC3-hCYvyOQ/exec',
-      history: []
+      history: [],
+      pendingDelete: null // { digitNumber, timestamp, rowElement }
     };
 
     // ─── THEME CONTROLS ────────────────────────────────────
@@ -1937,16 +2210,27 @@
           let rowsHtml = '';
           data.data.forEach((item, index) => {
             rowsHtml += `
-              <tr>
-                <td>
-                  <span class="history-number">${formatDigitNumber(item.digitNumber)}</span>
-                </td>
-                <td class="history-timestamp">${formatThaiDateTime(item.timestamp)}</td>
-                <td>
-                  <span class="status-badge">
-                    <i class="lucide-check" style="width: 12px; height: 12px;"></i>
-                    บันทึกแล้ว
-                  </span>
+              <tr class="swipe-row" data-number="${item.digitNumber}" data-time="${item.timestamp}">
+                <td colspan="3" style="padding: 0; position: relative;">
+                  <div class="swipe-wrapper" ontouchstart="handleSwipeStart(event)" ontouchmove="handleSwipeMove(event)" ontouchend="handleSwipeEnd(event)">
+                    <div class="swipe-info">
+                      <span class="history-number">${formatDigitNumber(item.digitNumber)}</span>
+                      <span class="history-timestamp show-on-mobile" style="display: none; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">${formatThaiDateTime(item.timestamp)}</span>
+                    </div>
+                    <div class="swipe-timestamp-col hide-on-mobile">
+                      <span class="history-timestamp">${formatThaiDateTime(item.timestamp)}</span>
+                    </div>
+                    <div class="swipe-action-col hide-on-mobile">
+                      <button class="btn-delete-row" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('tr'))" title="ลบข้อมูล">
+                        <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- ปุ่มลบสำหรับ Mobile Swipe ที่ซ่อนอยู่ด้านหลัง -->
+                  <div class="swipe-delete-action" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('tr'))">
+                    <i data-lucide="trash-2"></i>
+                    <span>ลบ</span>
+                  </div>
                 </td>
               </tr>
             `;
@@ -1960,7 +2244,7 @@
       } catch (err) {
         console.error(err);
         loading.style.display = 'none';
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--danger); font-weight: 500;">ดึงข้อมูลล้มเหลว ตรวจสอบสิทธิ์หรือสลับแท็บใหม่</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--danger); font-weight: 500; padding: 14px 16px;">ดึงข้อมูลล้มเหลว ตรวจสอบสิทธิ์หรือสลับแท็บใหม่</td></tr>';
         table.style.display = 'table';
       } finally {
         syncIcon.classList.remove('spinner');
@@ -2060,14 +2344,27 @@
               let rowsHtml = '';
               data.data.forEach((item, index) => {
                 rowsHtml += `
-                  <tr>
-                    <td><span class="history-number">${formatDigitNumber(item.digitNumber)}</span></td>
-                    <td class="history-timestamp">${formatThaiDateTime(item.timestamp)}</td>
-                    <td>
-                      <span class="status-badge">
-                        <i class="lucide-check" style="width: 12px; height: 12px;"></i>
-                        บันทึกแล้ว
-                      </span>
+                  <tr class="swipe-row" data-number="${item.digitNumber}" data-time="${item.timestamp}">
+                    <td colspan="3" style="padding: 0; position: relative;">
+                      <div class="swipe-wrapper" ontouchstart="handleSwipeStart(event)" ontouchmove="handleSwipeMove(event)" ontouchend="handleSwipeEnd(event)">
+                        <div class="swipe-info">
+                          <span class="history-number">${formatDigitNumber(item.digitNumber)}</span>
+                          <span class="history-timestamp show-on-mobile" style="display: none; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">${formatThaiDateTime(item.timestamp)}</span>
+                        </div>
+                        <div class="swipe-timestamp-col hide-on-mobile">
+                          <span class="history-timestamp">${formatThaiDateTime(item.timestamp)}</span>
+                        </div>
+                        <div class="swipe-action-col hide-on-mobile">
+                          <button class="btn-delete-row" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('tr'))" title="ลบข้อมูล">
+                            <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <!-- ปุ่มลบสำหรับ Mobile Swipe ที่ซ่อนอยู่ด้านหลัง -->
+                      <div class="swipe-delete-action" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('tr'))">
+                        <i data-lucide="trash-2"></i>
+                        <span>ลบ</span>
+                      </div>
                     </td>
                   </tr>
                 `;
@@ -2251,6 +2548,151 @@
       // คืนค่าปุ่มตรวจสอบ
       resetF2Button();
       showToast(`เปรียบเทียบข้อมูลเสร็จสิ้น! พบรายการตรงกัน ${matched.length} รายการ`, 'success');
+    }
+
+    // ─── SWIPE TO DELETE LOGIC FOR MOBILE ──────────────────
+    let touchStartX = 0;
+    let touchCurrentX = 0;
+    let activeSwipeWrapper = null;
+    let isSwiping = false;
+
+    function handleSwipeStart(e) {
+      if (window.innerWidth > 600) return;
+      
+      const wrapper = e.currentTarget;
+      resetOtherSwipes(wrapper);
+      
+      touchStartX = e.touches[0].clientX;
+      activeSwipeWrapper = wrapper;
+      isSwiping = true;
+      
+      wrapper.style.transition = 'none';
+    }
+
+    function handleSwipeMove(e) {
+      if (!isSwiping || !activeSwipeWrapper) return;
+      
+      touchCurrentX = e.touches[0].clientX;
+      const diffX = touchCurrentX - touchStartX;
+      
+      if (diffX < 0) {
+        const translateAmt = Math.max(diffX, -90);
+        activeSwipeWrapper.style.transform = `translateX(${translateAmt}px)`;
+      } else {
+        const translateAmt = Math.min(diffX, 15);
+        activeSwipeWrapper.style.transform = `translateX(${translateAmt}px)`;
+      }
+    }
+
+    function handleSwipeEnd(e) {
+      if (!isSwiping || !activeSwipeWrapper) return;
+      isSwiping = false;
+      
+      activeSwipeWrapper.style.transition = 'transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1)';
+      
+      const diffX = touchCurrentX - touchStartX;
+      
+      if (diffX < -45) {
+        activeSwipeWrapper.style.transform = 'translateX(-80px)';
+        activeSwipeWrapper.classList.add('swiped');
+      } else {
+        activeSwipeWrapper.style.transform = 'translateX(0px)';
+        activeSwipeWrapper.classList.remove('swiped');
+      }
+    }
+
+    function resetOtherSwipes(currentWrapper) {
+      document.querySelectorAll('.swipe-wrapper.swiped').forEach(wrapper => {
+        if (wrapper !== currentWrapper) {
+          wrapper.style.transition = 'transform 0.2s ease';
+          wrapper.style.transform = 'translateX(0px)';
+          wrapper.classList.remove('swiped');
+        }
+      });
+    }
+
+    // ─── DELETE ROW LOGIC ──────────────────────────────────
+    function confirmDeleteRow(digitNumber, timestamp, rowElement) {
+      STATE.pendingDelete = {
+        digitNumber: digitNumber,
+        timestamp: timestamp,
+        rowElement: rowElement
+      };
+      
+      document.getElementById('delete-confirm-number').textContent = formatDigitNumber(digitNumber);
+      document.getElementById('delete-confirm-modal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('delete-confirm-modal').classList.remove('active');
+      
+      if (STATE.pendingDelete && STATE.pendingDelete.rowElement) {
+        const wrapper = STATE.pendingDelete.rowElement.querySelector('.swipe-wrapper');
+        if (wrapper) {
+          wrapper.style.transition = 'transform 0.2s ease';
+          wrapper.style.transform = 'translateX(0px)';
+          wrapper.classList.remove('swiped');
+        }
+      }
+      
+      STATE.pendingDelete = null;
+    }
+
+    function closeDeleteModalOnOverlay(e) {
+      if (e.target.id === 'delete-confirm-modal') {
+        closeDeleteModal();
+      }
+    }
+
+    async function executeDeleteRow() {
+      if (!STATE.pendingDelete || !STATE.apiUrl || !STATE.currentUser) {
+        showToast('ข้อมูลสิทธิ์ไม่ถูกต้อง หรือไม่มีการเลือกรายการลบ', 'error');
+        closeDeleteModal();
+        return;
+      }
+      
+      const { digitNumber, timestamp } = STATE.pendingDelete;
+      
+      const submitBtn = document.getElementById('btn-confirm-delete-submit');
+      const origHtml = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="lucide-refresh-cw spinner" style="width: 16px; height: 16px;"></i> กำลังลบ...';
+      lucide.createIcons();
+      
+      const payload = {
+        action: 'deleteData',
+        username: STATE.currentUser.username,
+        digitNumber: digitNumber,
+        timestamp: timestamp
+      };
+      
+      try {
+        const response = await fetch(STATE.apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'ok') {
+          showToast(`ลบข้อมูลหมายเลข ${formatDigitNumber(digitNumber)} สำเร็จ`, 'success');
+          closeDeleteModal();
+          
+          await loadUserHistory();
+        } else {
+          showToast(data.message || 'เกิดข้อผิดพลาดในการลบข้อมูล', 'error');
+          closeDeleteModal();
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('การส่งข้อมูลล้มเหลว กรุณาตรวจสอบอินเทอร์เน็ต', 'error');
+        closeDeleteModal();
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origHtml;
+        lucide.createIcons();
+      }
     }
 
   </script>

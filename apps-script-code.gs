@@ -49,6 +49,8 @@ function doPost(e) {
       result = addDigitNumber(body.username, body.digitNumber);
     } else if (action === 'updateProfile') {
       result = updateUserProfile(body.currentUsername, body.newUsername, body.newPassword, body.newName);
+    } else if (action === 'deleteData') {
+      result = deleteDigitNumber(body.username, body.digitNumber, body.timestamp);
     } else {
       result = { status: 'error', message: 'ไม่พบ Action ที่ระบุ หรือรูปแบบ POST ไม่ถูกต้อง' };
     }
@@ -248,4 +250,57 @@ function updateUserProfile(currentUsername, newUsername, newPassword, newName) {
       name: String(newName).trim()
     }
   };
+}
+
+// ─── ฟังก์ชันลบตัวเลข 10 หลัก (ฟังก์ชันลบข้อมูลรายแถว) ────────────────
+function deleteDigitNumber(username, digitNumber, timestamp) {
+  if (!username) {
+    return { status: 'error', message: 'ไม่พบข้อมูลผู้ใช้ กรุณาเข้าสู่ระบบใหม่' };
+  }
+  if (!digitNumber) {
+    return { status: 'error', message: 'ไม่พบหมายเลขที่ต้องการลบ' };
+  }
+  
+  const sheet = getDataSheet();
+  const values = sheet.getDataRange().getValues();
+  const searchUser = String(username).trim().toLowerCase();
+  let searchNum = String(digitNumber).trim();
+  if (searchNum.length === 9) searchNum = '0' + searchNum;
+  
+  // แปลงค่า timestamp ให้เป็น String เพื่อเปรียบเทียบ
+  const searchTime = timestamp ? String(timestamp).trim() : '';
+
+  let foundRow = -1;
+  // วนหาจากล่างขึ้นบนเพื่อให้เจอตัวล่าสุดที่ตรงกับเงื่อนไข
+  for (let i = values.length - 1; i >= 1; i--) {
+    const dbUser = String(values[i][1]).trim().toLowerCase();
+    let dbNum = String(values[i][2]).trim();
+    if (dbNum.length === 9) dbNum = '0' + dbNum;
+    
+    // แปลงข้อมูลวันที่ในชีตให้อยู่ในฟอร์แมต String เผื่อเปรียบเทียบ
+    let dbTime = '';
+    if (values[i][3]) {
+      if (values[i][3] instanceof Date) {
+        const timezone = Session.getScriptTimeZone() || 'Asia/Bangkok';
+        dbTime = Utilities.formatDate(values[i][3], timezone, 'yyyy-MM-dd HH:mm:ss');
+      } else {
+        dbTime = String(values[i][3]).trim();
+      }
+    }
+    
+    // ตรวจสอบความสอดคล้อง
+    if (dbUser === searchUser && dbNum === searchNum) {
+      if (!searchTime || dbTime === searchTime || String(values[i][3]).trim() === searchTime) {
+        foundRow = i + 1; // 1-indexed
+        break;
+      }
+    }
+  }
+  
+  if (foundRow !== -1) {
+    sheet.deleteRow(foundRow);
+    return { status: 'ok', message: 'ลบข้อมูลจากฐานข้อมูลเรียบร้อยแล้ว' };
+  }
+  
+  return { status: 'error', message: 'ไม่พบรายการข้อมูลที่ต้องการลบในระบบ' };
 }
