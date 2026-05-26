@@ -1877,7 +1877,7 @@
                 <td>
                   <span class="history-number">${formatDigitNumber(item.digitNumber)}</span>
                 </td>
-                <td class="history-timestamp">${item.timestamp}</td>
+                <td class="history-timestamp">${formatThaiDateTime(item.timestamp)}</td>
                 <td>
                   <span class="status-badge">
                     <i class="lucide-check" style="width: 12px; height: 12px;"></i>
@@ -1911,6 +1911,31 @@
       if (cleaned.length !== 10) return cleaned;
       // รูปแบบ XXX-XXX-XXXX
       return `${cleaned.substr(0, 3)}-${cleaned.substr(3, 3)}-${cleaned.substr(6, 4)}`;
+    }
+
+    // HELPER: แปลงวันที่และเวลาให้อยู่ในรูปแบบภาษาไทยที่สวยงาม เช่น "26 พ.ค. 2569 - 9.19 น."
+    function formatThaiDateTime(dateStr) {
+      if (!dateStr) return '';
+      try {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return dateStr;
+        
+        const day = date.getDate();
+        const thaiMonths = [
+          'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
+          'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
+        ];
+        const month = thaiMonths[date.getMonth()];
+        const yearBE = date.getFullYear() + 543;
+        
+        const hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        
+        return `${day} ${month} ${yearBE} - ${hours}.${minutes} น.`;
+      } catch (e) {
+        console.error(e);
+        return dateStr;
+      }
     }
 
     // ─── F2: MULTI-LINE CHECK & COMPARISON LOGIC ───────────
@@ -1974,7 +1999,7 @@
                   <tr>
                     <td>#${item.id || (data.data.length - index)}</td>
                     <td><span class="history-number">${formatDigitNumber(item.digitNumber)}</span></td>
-                    <td class="history-timestamp">${item.timestamp}</td>
+                    <td class="history-timestamp">${formatThaiDateTime(item.timestamp)}</td>
                     <td>
                       <span class="status-badge">
                         <i class="lucide-check" style="width: 12px; height: 12px;"></i>
@@ -2116,7 +2141,7 @@
                 ${item.details || 'ไม่มีข้อมูลชื่อ/รายละเอียด'}
               </div>
               <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; margin-top: 4px;">
-                <i class="lucide-calendar" style="width: 12px; height: 12px;"></i> บันทึกในชีตเมื่อ: ${item.timestamp}
+                <i class="lucide-calendar" style="width: 12px; height: 12px;"></i> บันทึกในชีตเมื่อ: ${formatThaiDateTime(item.timestamp)}
               </div>
             </div>
           `;
