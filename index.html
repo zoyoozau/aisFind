@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>aisFix — บันทึกข้อมูลดิจิทัลอัจฉริยะ</title>
-  
+
   <!-- Google Fonts: Outfit & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -20,7 +23,8 @@
       --bg-dark: #f8fafc;
       --bg-card: rgba(255, 255, 255, 0.85);
       --bg-card-hover: rgba(255, 255, 255, 0.95);
-      --primary: #10b981; /* Cyber Green */
+      --primary: #10b981;
+      /* Cyber Green */
       --primary-glow: rgba(16, 185, 129, 0.15);
       --primary-dark: #059669;
       --text-main: #0f172a;
@@ -40,6 +44,13 @@
       --progress-track-bg: rgba(0, 0, 0, 0.05);
       --bg-gradient: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.03) 0px, transparent 50%);
       
+      /* New light mode layout variables */
+      --bg-panel-card: rgba(255, 255, 255, 0.95);
+      --bg-tab-bar: rgba(15, 23, 42, 0.04);
+      --tab-active-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      --btn-icon-bg: rgba(15, 23, 42, 0.04);
+      --btn-icon-bg-hover: rgba(15, 23, 42, 0.08);
+
       --font-outfit: 'Outfit', sans-serif;
       --font-inter: 'Inter', sans-serif;
     }
@@ -68,6 +79,11 @@
       --stat-card-bg: rgba(255, 255, 255, 0.02);
       --progress-track-bg: rgba(255, 255, 255, 0.05);
       --bg-gradient: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+      --bg-panel-card: rgba(15, 23, 42, 0.4);
+      --bg-tab-bar: rgba(15, 23, 42, 0.8);
+      --tab-active-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      --btn-icon-bg: rgba(255, 255, 255, 0.05);
+      --btn-icon-bg-hover: rgba(255, 255, 255, 0.1);
     }
 
     * {
@@ -93,13 +109,16 @@
     ::-webkit-scrollbar {
       width: 8px;
     }
+
     ::-webkit-scrollbar-track {
       background: var(--bg-dark);
     }
+
     ::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 4px;
     }
+
     ::-webkit-scrollbar-thumb:hover {
       background: var(--primary);
     }
@@ -231,7 +250,8 @@
       max-width: 450px;
       width: 100%;
       margin: 0 auto;
-      display: none; /* ควบคุมด้วย JS */
+      display: none;
+      /* ควบคุมด้วย JS */
     }
 
     .auth-logo {
@@ -365,13 +385,16 @@
 
     /* ─── 2. DASHBOARD MAIN SCREEN ─────────────────────────── */
     .dashboard-wrapper {
-      display: none; /* ควบคุมด้วย JS */
+      display: none;
+      /* ควบคุมด้วย JS */
       opacity: 0;
       animation: fadeIn 0.4s forwards;
     }
 
     @keyframes fadeIn {
-      to { opacity: 1; }
+      to {
+        opacity: 1;
+      }
     }
 
     /* ─── HEADER ──────────────────────────────────────────── */
@@ -436,7 +459,7 @@
     }
 
     .btn-icon {
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--btn-icon-bg);
       border: 1px solid var(--border-color);
       width: 42px;
       height: 42px;
@@ -449,7 +472,7 @@
     }
 
     .btn-icon:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: var(--btn-icon-bg-hover);
       color: var(--primary);
       border-color: var(--primary-glow);
     }
@@ -478,7 +501,7 @@
     /* ─── TAB NAVIGATION ──────────────────────────────────── */
     .tab-bar {
       display: flex;
-      background: rgba(15, 23, 42, 0.8);
+      background: var(--bg-tab-bar);
       border: 1px solid var(--border-color);
       border-radius: 16px;
       padding: 6px;
@@ -507,7 +530,7 @@
       background: var(--bg-dark);
       border: 1px solid var(--border-color);
       color: var(--primary);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: var(--tab-active-shadow);
     }
 
     .tab-btn:hover:not(.active) {
@@ -539,7 +562,7 @@
 
     /* CARD SUB-DESIGN */
     .panel-card {
-      background: rgba(15, 23, 42, 0.4);
+      background: var(--bg-panel-card);
       border: 1px solid var(--border-color);
       border-radius: 20px;
       padding: 2rem;
@@ -611,7 +634,8 @@
       border: none;
       color: var(--text-muted);
       cursor: pointer;
-      display: none; /* จะปรากฏขึ้นเมื่อมีค่า */
+      display: none;
+      /* จะปรากฏขึ้นเมื่อมีค่า */
       padding: 4px;
     }
 
@@ -652,7 +676,7 @@
     }
 
     .btn-sync {
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--btn-icon-bg);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
       font-weight: 600;
@@ -666,7 +690,7 @@
     }
 
     .btn-sync:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--btn-icon-bg-hover);
       color: var(--primary);
       border-color: var(--primary-glow);
     }
@@ -889,7 +913,9 @@
     }
 
     @keyframes rotate {
-      100% { transform: rotate(360deg); }
+      100% {
+        transform: rotate(360deg);
+      }
     }
 
     @keyframes dash {
@@ -897,10 +923,12 @@
         stroke-dasharray: 1, 150;
         stroke-dashoffset: 0;
       }
+
       50% {
         stroke-dasharray: 90, 150;
         stroke-dashoffset: -35;
       }
+
       100% {
         stroke-dasharray: 90, 150;
         stroke-dashoffset: -124;
@@ -945,8 +973,84 @@
     .theme-toggle-fixed:hover i {
       transform: rotate(30deg);
     }
+
+    /* ─── MOBILE RESPONSIVE UI/UX OPTIMIZATIONS ──────────────── */
+    @media (max-width: 600px) {
+      .app-container {
+        padding: 1rem 0.75rem;
+      }
+
+      .glass-card {
+        padding: 1.25rem 1rem;
+        border-radius: 16px;
+      }
+
+      .dash-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 1rem;
+      }
+
+      .user-profile {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .user-info {
+        text-align: left;
+      }
+
+      .tab-bar {
+        padding: 4px;
+        gap: 4px;
+        margin-bottom: 1.25rem;
+      }
+
+      .tab-btn {
+        padding: 10px 8px;
+        font-size: 0.8rem;
+        gap: 4px;
+      }
+
+      .panel-card {
+        padding: 1.25rem 1rem;
+        gap: 1rem;
+        border-radius: 16px;
+      }
+
+      .digit-input {
+        font-size: 1.4rem;
+      }
+
+      .theme-toggle-fixed {
+        top: 12px;
+        right: 12px;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+      }
+
+      .theme-toggle-fixed i {
+        width: 16px;
+        height: 16px;
+      }
+      
+      .history-table th, 
+      .history-table td {
+        padding: 10px 8px;
+        font-size: 0.8rem;
+      }
+      
+      .history-number {
+        font-size: 0.95rem;
+      }
+    }
   </style>
 </head>
+
 <body>
 
   <!-- FIXED THEME TOGGLE BUTTON -->
@@ -963,7 +1067,8 @@
         ระบบยังไม่ได้เชื่อมต่อ Google Sheets API กรุณาตั้งค่าเพื่อเริ่มบันทึกข้อมูล
       </span>
       <button class="setup-btn" onclick="openSettingsModal()">
-        <i class="lucide-settings" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i>
+        <i class="lucide-settings"
+          style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i>
         ตั้งค่าเดี๋ยวนี้
       </button>
     </div>
@@ -983,7 +1088,8 @@
           <label class="form-label" for="username">ชื่อผู้ใช้งาน</label>
           <div class="input-wrapper">
             <i data-lucide="user" class="prefix-icon"></i>
-            <input type="text" id="username" class="form-input" placeholder="กรอกชื่อผู้ใช้..." required autocomplete="username">
+            <input type="text" id="username" class="form-input" placeholder="กรอกชื่อผู้ใช้..." required
+              autocomplete="username">
           </div>
         </div>
 
@@ -991,7 +1097,8 @@
           <label class="form-label" for="password">รหัสผ่าน</label>
           <div class="input-wrapper">
             <i data-lucide="lock" class="prefix-icon"></i>
-            <input type="password" id="password" class="form-input" placeholder="กรอกรหัสผ่าน..." required autocomplete="current-password">
+            <input type="password" id="password" class="form-input" placeholder="กรอกรหัสผ่าน..." required
+              autocomplete="current-password">
             <i data-lucide="eye" class="toggle-pass" id="password-toggle" onclick="togglePasswordVisibility()"></i>
           </div>
         </div>
@@ -1005,7 +1112,7 @@
 
     <!-- 2. หน้าแดชบอร์ดหลัก (DASHBOARD SCREEN) -->
     <div id="dashboard-screen" class="dashboard-wrapper glass-card">
-      
+
       <!-- DASHBOARD HEADER -->
       <header class="dash-header">
         <div class="dash-logo">
@@ -1036,49 +1143,40 @@
       <nav class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('f1-panel', this)">
           <i data-lucide="hash"></i>
-          ฟังก์ชันที่ 1: บันทึกเลข 10 หลัก
+          บันทึก 10 หลัก
         </button>
         <button class="tab-btn" onclick="switchTab('f2-panel', this)">
-          <i data-lucide="lock-keyhole"></i>
-          ฟังก์ชันที่ 2: เร็วๆ นี้
+          <i data-lucide="shield-check"></i>
+          ตรวจสอบ & เปรียบเทียบ
         </button>
       </nav>
 
       <!-- TAB PANELS -->
-      
+
       <!-- PANEL 1: RECORDER & HISTORY -->
       <div id="f1-panel" class="tab-panel active">
         <div class="recorder-grid">
-          
+
           <!-- LEFT: INPUT RECORDER -->
           <section class="panel-card">
             <h2 class="card-title">
               <i data-lucide="plus-circle" style="color: var(--primary);"></i>
               ป้อนหมายเลข 10 หลัก
             </h2>
-            
+
             <form id="record-form" onsubmit="handleRecordSubmit(event)">
               <div class="form-group" style="margin-bottom: 1rem;">
                 <label class="form-label">กรอกหมายเลข</label>
                 <div class="digit-box-wrapper">
                   <div class="digit-input-container">
                     <i data-lucide="keyboard" class="digit-icon"></i>
-                    <input 
-                      type="text" 
-                      id="digit-input" 
-                      class="digit-input" 
-                      placeholder="0000000000" 
-                      maxlength="10"
-                      pattern="\d{10}"
-                      inputmode="numeric"
-                      autocomplete="off"
-                      oninput="validateDigitInput(this)"
-                    >
+                    <input type="text" id="digit-input" class="digit-input" placeholder="0000000000" maxlength="10"
+                      pattern="\d{10}" inputmode="numeric" autocomplete="off" oninput="validateDigitInput(this)">
                     <button type="button" id="digit-clear" class="digit-clear-btn" onclick="clearDigitInput()">
                       <i data-lucide="x-circle"></i>
                     </button>
                   </div>
-                  
+
                   <div class="validation-indicator">
                     <span id="digit-count-label">ป้อนแล้ว: 0 / 10 หลัก</span>
                     <span id="validation-status" class="validation-status invalid">
@@ -1147,27 +1245,25 @@
       <!-- PANEL 2: COMPARISON & SEARCH -->
       <div id="f2-panel" class="tab-panel">
         <div class="recorder-grid">
-          
+
           <!-- LEFT: LARGE TEXTAREA INPUT -->
           <section class="panel-card">
             <h2 class="card-title">
               <i data-lucide="file-text" style="color: var(--primary);"></i>
               ป้อนชุดข้อมูลตรวจสอบ
             </h2>
-            
+
             <form id="f2-form" onsubmit="handleF2Check(event)">
               <div class="form-group" style="margin-bottom: 1rem; display: flex; flex-direction: column; gap: 8px;">
                 <label class="form-label">วางข้อมูลทั้งหมดที่ต้องการตรวจสอบ</label>
-                <textarea 
-                  id="f2-textarea" 
-                  class="form-input" 
-                  style="min-height: 260px; font-family: var(--font-inter); line-height: 1.6; resize: vertical; padding: 16px; font-size: 0.95rem;" 
-                  placeholder="ตัวอย่างการวางข้อมูล:&#10;8805826272 ดุสิต โพธิ์พันธุ์&#10;8804496736 โกมล บุญสงค์&#10;8805800830 บุผาวรรณ พ่อค้า&#10;ไทย"
-                ></textarea>
+                <textarea id="f2-textarea" class="form-input"
+                  style="min-height: 260px; font-family: var(--font-inter); line-height: 1.6; resize: vertical; padding: 16px; font-size: 0.95rem;"
+                  placeholder="ตัวอย่างการวางข้อมูล:&#10;8805826272 ดุสิต โพธิ์พันธุ์&#10;8804496736 โกมล บุญสงค์&#10;8805800830 บุผาวรรณ พ่อค้า&#10;ไทย"></textarea>
               </div>
 
               <div style="display: flex; gap: 10px;">
-                <button type="button" class="btn-sync" style="padding: 12px 16px; border-radius: 14px;" onclick="clearF2Textarea()" title="ล้างข้อมูล">
+                <button type="button" class="btn-sync" style="padding: 12px 16px; border-radius: 14px;"
+                  onclick="clearF2Textarea()" title="ล้างข้อมูล">
                   ล้างค่า
                 </button>
                 <button type="submit" id="f2-submit" class="btn-submit" style="margin: 0; flex-grow: 1;">
@@ -1179,18 +1275,23 @@
           </section>
 
           <!-- RIGHT: MATCHED RESULTS DISPLAY -->
-          <section class="panel-card" style="display: flex; flex-direction: column; justify-content: flex-start; gap: 1.5rem;">
-            
+          <section class="panel-card"
+            style="display: flex; flex-direction: column; justify-content: flex-start; gap: 1.5rem;">
+
             <!-- สถานะก่อนคลิกตรวจสอบ (Unchecked) -->
             <div id="f2-results-unchecked" class="empty-state" style="padding: 5rem 1rem; flex-grow: 1;">
               <i data-lucide="text-search" style="font-size: 3rem; color: var(--primary); opacity: 0.4;"></i>
-              <h3 style="font-family: var(--font-outfit); font-weight: 700; font-size: 1.3rem; margin-top: 10px; color: var(--text-main);">พร้อมเปรียบเทียบฐานข้อมูล</h3>
-              <p style="font-size: 0.85rem; max-width: 320px; line-height: 1.5; color: var(--text-muted);">วางชุดตัวเลขและรายละเอียดของคุณที่กล่องข้อมูลด้านซ้าย แล้วกดปุ่มตรวจสอบเพื่อเช็กรายการที่ตรงกันในฐานข้อมูลปัจจุบันทันที</p>
+              <h3
+                style="font-family: var(--font-outfit); font-weight: 700; font-size: 1.3rem; margin-top: 10px; color: var(--text-main);">
+                พร้อมเปรียบเทียบฐานข้อมูล</h3>
+              <p style="font-size: 0.85rem; max-width: 320px; line-height: 1.5; color: var(--text-muted);">
+                วางชุดตัวเลขและรายละเอียดของคุณที่กล่องข้อมูลด้านซ้าย
+                แล้วกดปุ่มตรวจสอบเพื่อเช็กรายการที่ตรงกันในฐานข้อมูลปัจจุบันทันที</p>
             </div>
 
             <!-- สถานะตรวจสอบแล้ว (Checked) -->
             <div id="f2-results-checked" style="display: none; flex-direction: column; gap: 1.5rem; width: 100%;">
-              
+
               <div class="history-header">
                 <h2 class="card-title" style="border-bottom: none; padding-bottom: 0;">
                   <i data-lucide="check-square" style="color: var(--primary);"></i>
@@ -1200,29 +1301,43 @@
 
               <!-- Stat Counters Grid -->
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center;">
-                <div style="background: var(--stat-card-bg); border: 1px solid var(--border-color); padding: 10px; border-radius: 12px;">
+                <div
+                  style="background: var(--stat-card-bg); border: 1px solid var(--border-color); padding: 10px; border-radius: 12px;">
                   <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">พบในข้อมูล</div>
-                  <div id="f2-stat-total" style="font-size: 1.6rem; font-weight: 800; font-family: var(--font-outfit); margin-top: 4px; color: var(--text-main);">0</div>
+                  <div id="f2-stat-total"
+                    style="font-size: 1.6rem; font-weight: 800; font-family: var(--font-outfit); margin-top: 4px; color: var(--text-main);">
+                    0</div>
                 </div>
-                <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 10px; border-radius: 12px;">
+                <div
+                  style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 10px; border-radius: 12px;">
                   <div style="font-size: 0.75rem; color: var(--primary); font-weight: 600;">ตรงในระบบ</div>
-                  <div id="f2-stat-matched" style="font-size: 1.6rem; font-weight: 800; font-family: var(--font-outfit); margin-top: 4px; color: var(--primary);">0</div>
+                  <div id="f2-stat-matched"
+                    style="font-size: 1.6rem; font-weight: 800; font-family: var(--font-outfit); margin-top: 4px; color: var(--primary);">
+                    0</div>
                 </div>
-                <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px; border-radius: 12px;">
+                <div
+                  style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px; border-radius: 12px;">
                   <div style="font-size: 0.75rem; color: #f87171; font-weight: 600;">ไม่มีในระบบ</div>
-                  <div id="f2-stat-unmatched" style="font-size: 1.6rem; font-weight: 800; font-family: var(--font-outfit); margin-top: 4px; color: #f87171;">0</div>
+                  <div id="f2-stat-unmatched"
+                    style="font-size: 1.6rem; font-weight: 800; font-family: var(--font-outfit); margin-top: 4px; color: #f87171;">
+                    0</div>
                 </div>
               </div>
 
               <!-- Progress Bar -->
-              <div style="background: var(--progress-track-bg); border-radius: 99px; height: 16px; overflow: hidden; display: flex; align-items: center; position: relative;">
-                <div id="f2-progress" style="background: linear-gradient(90deg, #3b82f6, var(--primary)); width: 0%; height: 100%; border-radius: 99px; transition: width 0.6s ease;"></div>
-                <span id="f2-progress-percent" style="position: absolute; right: 12px; font-size: 0.7rem; font-weight: 700; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">0%</span>
+              <div
+                style="background: var(--progress-track-bg); border-radius: 99px; height: 16px; overflow: hidden; display: flex; align-items: center; position: relative;">
+                <div id="f2-progress"
+                  style="background: linear-gradient(90deg, #3b82f6, var(--primary)); width: 0%; height: 100%; border-radius: 99px; transition: width 0.6s ease;">
+                </div>
+                <span id="f2-progress-percent"
+                  style="position: absolute; right: 12px; font-size: 0.7rem; font-weight: 700; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">0%</span>
               </div>
 
               <!-- MATCHED ITEMS LIST -->
               <div>
-                <h4 style="font-size: 0.85rem; text-transform: uppercase; font-weight: 700; color: var(--primary); letter-spacing: 0.05em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                <h4
+                  style="font-size: 0.85rem; text-transform: uppercase; font-weight: 700; color: var(--primary); letter-spacing: 0.05em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
                   <i data-lucide="shield-check" style="width: 16px; height: 16px;"></i>
                   รายการที่ตรงกับฐานข้อมูล
                 </h4>
@@ -1233,7 +1348,8 @@
 
               <!-- UNMATCHED ITEMS LIST -->
               <div id="f2-unmatched-wrapper" style="display: none;">
-                <h4 style="font-size: 0.85rem; text-transform: uppercase; font-weight: 700; color: #f87171; letter-spacing: 0.05em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                <h4
+                  style="font-size: 0.85rem; text-transform: uppercase; font-weight: 700; color: #f87171; letter-spacing: 0.05em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
                   <i data-lucide="shield-alert" style="width: 16px; height: 16px;"></i>
                   รายการที่ยังไม่มีในระบบ (ไม่ตรง)
                 </h4>
@@ -1271,21 +1387,19 @@
           <label class="form-label" for="api-url">Google Apps Script URL (Web App)</label>
           <div class="input-wrapper">
             <i data-lucide="link" class="prefix-icon"></i>
-            <input 
-              type="url" 
-              id="api-url" 
-              class="form-input" 
-              placeholder="https://script.google.com/macros/s/.../exec" 
-              required
-            >
+            <input type="url" id="api-url" class="form-input" placeholder="https://script.google.com/macros/s/.../exec"
+              required>
           </div>
           <div class="help-text">
-            วาง URL ของ <strong>Web App API</strong> ที่ได้จากการ Deploy สคริปต์ <strong>Code.gs</strong> ในหน้าต่าง Apps Script
+            วาง URL ของ <strong>Web App API</strong> ที่ได้จากการ Deploy สคริปต์ <strong>Code.gs</strong> ในหน้าต่าง
+            Apps Script
           </div>
         </div>
 
         <div style="display: flex; gap: 12px; margin-top: 2rem;">
-          <button type="button" class="btn-sync" style="flex: 1; padding: 12px; font-size: 0.95rem; justify-content: center; border-radius: 14px;" onclick="testApiConnection()">
+          <button type="button" class="btn-sync"
+            style="flex: 1; padding: 12px; font-size: 0.95rem; justify-content: center; border-radius: 14px;"
+            onclick="testApiConnection()">
             <i data-lucide="sparkles" id="test-icon"></i>
             ทดสอบการเชื่อมต่อ
           </button>
@@ -1304,7 +1418,7 @@
   <!-- ─── CORE JAVASCRIPT LOGIC ───────────────────────────── -->
   <script>
     // ─── THEME INITIALIZATION (เรียกทันทีเพื่อป้องกันแสงวาบขณะโหลด) ───────
-    (function() {
+    (function () {
       const savedTheme = localStorage.getItem('aisFix_theme') || 'light';
       if (savedTheme === 'dark') {
         document.documentElement.classList.add('dark-theme');
@@ -1356,10 +1470,10 @@
 
       // โหลดไอเดีย Lucide Icons
       lucide.createIcons();
-      
+
       // ตรวจสอบว่าตั้งค่า API แล้วหรือยัง
       checkApiConfigStatus();
-      
+
       // ตรวจสอบ Session ที่เซฟไว้
       const savedUser = sessionStorage.getItem('aisFix_user');
       if (savedUser) {
@@ -1377,20 +1491,20 @@
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
-      
+
       let icon = 'info';
       if (type === 'success') icon = 'check-circle';
       if (type === 'error') icon = 'alert-triangle';
       if (type === 'warning') icon = 'alert-circle';
-      
+
       toast.innerHTML = `
         <i class="lucide-${icon}" style="flex-shrink: 0;"></i>
         <div style="font-size: 0.9rem; font-weight: 500;">${message}</div>
       `;
-      
+
       container.appendChild(toast);
       lucide.createIcons({ attrs: { class: 'lucide-icon' } });
-      
+
       // ลบอัตโนมัติหลัง 3.5 วินาที
       setTimeout(() => {
         toast.style.animation = 'toastOut 0.3s forwards';
@@ -1414,7 +1528,7 @@
     function showScreen(screenId) {
       document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('dashboard-screen').style.display = 'none';
-      
+
       const target = document.getElementById(screenId);
       if (screenId === 'dashboard-screen') {
         target.style.display = 'block';
@@ -1429,14 +1543,14 @@
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       // ซ่อนแผงแท็บทั้งหมด
       document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-      
+
       // เพิ่มความแอคทีฟให้ปุ่มและแผงที่คลิก
       btnElement.classList.add('active');
       document.getElementById(panelId).classList.add('active');
-      
+
       // คืนค่ารูปแบบไอคอนใหม่
       lucide.createIcons();
-      
+
       // ถ้ากดสลับมาแท็บประวัติ ให้ดึงข้อมูลมาแสดงผลใหม่
       if (panelId === 'f1-panel') {
         loadUserHistory();
@@ -1490,7 +1604,7 @@
 
     async function handleLogin(e) {
       e.preventDefault();
-      
+
       // ตรวจสอบว่าตั้งค่า API หรือยัง
       if (!STATE.apiUrl) {
         showToast('กรุณาคลิกปุ่มตั้งค่า API ก่อนเข้าสู่ระบบ', 'warning');
@@ -1503,7 +1617,7 @@
       const btn = document.getElementById('login-submit');
       const btnText = document.getElementById('login-btn-text');
       const btnIcon = document.getElementById('login-btn-icon');
-      
+
       const payload = {
         action: 'login',
         username: userEl.value.trim(),
@@ -1530,15 +1644,15 @@
         if (data.status === 'ok') {
           STATE.currentUser = data.user;
           sessionStorage.setItem('aisFix_user', JSON.stringify(data.user));
-          
+
           showToast(`ยินดีต้อนรับคุณ ${data.user.name} เข้าสู่ระบบ`, 'success');
           showScreen('dashboard-screen');
           updateUserDisplay();
-          
+
           // เคลียร์ฟอร์ม
           userEl.value = '';
           passEl.value = '';
-          
+
           loadUserHistory();
         } else {
           showToast(data.message || 'ข้อมูลเข้าสู่ระบบไม่ถูกต้อง', 'error');
@@ -1567,10 +1681,10 @@
     function saveSettings(e) {
       e.preventDefault();
       const urlInput = document.getElementById('api-url').value.trim();
-      
+
       STATE.apiUrl = urlInput;
       localStorage.setItem('aisFix_api_url', urlInput);
-      
+
       checkApiConfigStatus();
       closeSettingsModal();
       showToast('บันทึกการตั้งค่าการเชื่อมต่อ API เรียบร้อยแล้ว', 'success');
@@ -1592,7 +1706,7 @@
         // ทดสอบส่ง Get Action โง่ๆ ไปเช็กการตอบรับ
         const response = await fetch(`${urlInput}?action=getUserData&username=test_check_system`);
         const data = await response.json();
-        
+
         if (data.status === 'ok') {
           showToast('เชื่อมต่อ API สำเร็จ! ฐานข้อมูลทำงานเป็นปกติ', 'success');
         } else {
@@ -1612,7 +1726,7 @@
     function validateDigitInput(input) {
       // กรองเอาเฉพาะตัวเลขเท่านั้น
       let val = input.value.replace(/\D/g, '');
-      
+
       // จำกัด 10 หลัก
       if (val.length > 10) val = val.substring(0, 10);
       input.value = val;
@@ -1651,10 +1765,10 @@
 
     async function handleRecordSubmit(e) {
       e.preventDefault();
-      
+
       const digitInput = document.getElementById('digit-input');
       const digitVal = digitInput.value.trim();
-      
+
       if (digitVal.length !== 10) {
         showToast('ข้อมูลต้องเป็นตัวเลข 10 หลักเท่านั้น', 'error');
         return;
@@ -1727,7 +1841,7 @@
       table.style.display = 'none';
       empty.style.display = 'none';
       loading.style.display = 'flex';
-      
+
       syncIcon.classList.add('spinner');
       lucide.createIcons();
 
@@ -1740,7 +1854,7 @@
 
         if (data.status === 'ok' && data.data && data.data.length > 0) {
           STATE.history = data.data;
-          
+
           // เรนเดอร์ข้อมูลลงตาราง
           let rowsHtml = '';
           data.data.forEach((item, index) => {
@@ -1760,7 +1874,7 @@
               </tr>
             `;
           });
-          
+
           tbody.innerHTML = rowsHtml;
           table.style.display = 'table';
         } else {
@@ -1832,12 +1946,12 @@
 
         if (data.status === 'ok') {
           STATE.history = data.data;
-          
+
           // อัปเดตตารางประวัติในแท็บ 1 ด้วย
           const tbody = document.getElementById('history-tbody');
           const table = document.getElementById('history-table');
           const empty = document.getElementById('history-empty');
-          
+
           if (tbody) {
             tbody.innerHTML = '';
             if (data.data.length > 0) {
@@ -1883,7 +1997,7 @@
       const btn = document.getElementById('f2-submit');
       const btnText = document.getElementById('f2-btn-text');
       const btnIcon = document.getElementById('f2-btn-icon');
-      
+
       btn.disabled = false;
       btnText.textContent = 'ตรวจสอบและเปรียบเทียบ';
       btnIcon.setAttribute('data-lucide', 'sparkles');
@@ -1919,7 +2033,7 @@
       if (numbers.length === 0) {
         showToast('ไม่พบตัวเลข 10 หลักใดๆ ในข้อมูลที่วางลงไป', 'warning');
         resetF2Button();
-        
+
         document.getElementById('f2-results-unchecked').style.display = 'flex';
         document.getElementById('f2-results-checked').style.display = 'none';
         return;
@@ -2007,7 +2121,7 @@
       // เรนเดอร์รายการที่ "ไม่ตรงกัน"
       const unmatchedList = document.getElementById('f2-unmatched-list');
       const unmatchedWrapper = document.getElementById('f2-unmatched-wrapper');
-      
+
       if (unmatched.length > 0) {
         unmatchedWrapper.style.display = 'block';
         let unmatchedHtml = '';
@@ -2040,4 +2154,5 @@
 
   </script>
 </body>
+
 </html>
