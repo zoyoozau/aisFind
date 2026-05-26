@@ -987,7 +987,7 @@
       transform: rotate(30deg);
     }
 
-    /* ─── DELETE BUTTON & MODAL & SWIPE TO DELETE ──────────────── */
+    /* ─── DELETE BUTTON & MODAL ─────────────────────────── */
     .action-cell {
       text-align: right;
       width: 80px;
@@ -1118,26 +1118,54 @@
       background: var(--btn-icon-bg-hover);
     }
 
-    .history-table td {
-      padding: 0;
+    /* ─── NEW DIV-BASED HISTORY LIST SYSTEM (DESKTOP) ─────── */
+    .history-header-row {
+      display: flex;
+      background: var(--table-header-bg);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border-color);
+      border-radius: 12px 12px 0 0;
     }
     
-    .swipe-row {
+    .header-col {
+      display: flex;
+      align-items: center;
+    }
+
+    #history-items-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .history-item {
       position: relative;
       overflow: hidden;
+      border-bottom: 1px solid var(--border-color);
+      background: transparent;
+      height: 56px;
     }
     
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
     .swipe-wrapper {
       padding: 14px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
+      height: 100%;
       box-sizing: border-box;
-      background: transparent;
+      background: var(--bg-card); /* ล้างความโปร่งใสแบบ transparent ให้ทึบแสง */
       z-index: 2;
       position: relative;
+      transition: transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);
     }
     
     .swipe-info {
@@ -1157,6 +1185,10 @@
       text-align: right;
       display: flex;
       justify-content: flex-end;
+    }
+
+    .swipe-delete-action {
+      display: none; /* ซ่อนเด็ดขาดบน Desktop */
     }
 
     .show-on-mobile {
@@ -1227,35 +1259,22 @@
         height: 16px;
       }
       
-      .history-table thead {
+      /* ─── NEW DIV-BASED HISTORY LIST SYSTEM (MOBILE) ─────── */
+      .history-header-row {
         display: none !important;
       }
       
-      .history-table, 
-      .history-table tbody {
-        display: block !important;
-        width: 100% !important;
-      }
-      
-      .history-table tbody tr {
+      .history-item {
         display: block !important;
         position: relative !important;
         width: 100% !important;
         margin-bottom: 10px;
-        background: var(--bg-card);
         border: 1px solid var(--border-color);
         border-radius: 14px;
         overflow: hidden;
         touch-action: pan-y;
-        height: 68px;
-      }
-      
-      .history-table tbody tr td {
-        display: block !important;
-        width: 100% !important;
-        height: 100% !important;
-        border: none !important;
-        padding: 0 !important;
+        height: 68px; /* สูงขึ้นบนมือถือเพื่อจัดวาง 2 บรรทัด */
+        background: var(--bg-card);
       }
       
       .swipe-wrapper {
@@ -1264,10 +1283,8 @@
         left: 0;
         width: 100%;
         height: 100%;
-        display: flex;
-        align-items: center;
         padding: 12px 16px;
-        background: var(--bg-card);
+        background: var(--bg-panel-card) !important; /* ใช้สีทึบของแผงการ์ดเพื่อบดบังปุ่มสีแดง */
         z-index: 2;
         transition: transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);
         box-sizing: border-box;
@@ -1281,6 +1298,7 @@
       }
       
       .swipe-delete-action {
+        display: flex !important;
         position: absolute;
         top: 0;
         right: 0;
@@ -1288,7 +1306,6 @@
         height: 100%;
         background: var(--danger);
         color: #fff;
-        display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
@@ -1470,18 +1487,16 @@
             </div>
 
             <div class="history-list-wrapper">
-              <table class="history-table" id="history-table">
-                <thead>
-                  <tr>
-                    <th>หมายเลข 10 หลัก</th>
-                    <th class="hide-on-mobile">วันที่ - เวลาบันทึก</th>
-                    <th class="action-cell hide-on-mobile">จัดการ</th>
-                  </tr>
-                </thead>
-                <tbody id="history-tbody">
+              <div id="history-list-container" style="display: none; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                <div class="history-header-row hide-on-mobile">
+                  <div class="header-col" style="flex: 1; font-family: var(--font-outfit); font-weight: 700; font-size: 0.8rem;">หมายเลข 10 หลัก</div>
+                  <div class="header-col hide-on-mobile" style="flex: 1.2; font-family: var(--font-outfit); font-weight: 700; font-size: 0.8rem;">วันที่ - เวลาบันทึก</div>
+                  <div class="header-col action-cell hide-on-mobile" style="width: 80px; justify-content: flex-end; font-family: var(--font-outfit); font-weight: 700; font-size: 0.8rem;">จัดการ</div>
+                </div>
+                <div id="history-items-container">
                   <!-- แทรกข้อมูลด้วย JS -->
-                </tbody>
-              </table>
+                </div>
+              </div>
 
               <!-- หน้าว่าง/ยังไม่มีข้อมูล -->
               <div id="history-empty" class="empty-state" style="display: none;">
@@ -2181,10 +2196,10 @@
     async function loadUserHistory() {
       if (!STATE.apiUrl || !STATE.currentUser) return;
 
-      const tbody = document.getElementById('history-tbody');
+      const tbody = document.getElementById('history-items-container');
       const empty = document.getElementById('history-empty');
       const loading = document.getElementById('history-loading');
-      const table = document.getElementById('history-table');
+      const table = document.getElementById('history-list-container');
       const syncIcon = document.getElementById('sync-icon');
 
       // แสดงการโหลด
@@ -2210,42 +2225,40 @@
           let rowsHtml = '';
           data.data.forEach((item, index) => {
             rowsHtml += `
-              <tr class="swipe-row" data-number="${item.digitNumber}" data-time="${item.timestamp}">
-                <td colspan="3" style="padding: 0; position: relative;">
-                  <div class="swipe-wrapper" ontouchstart="handleSwipeStart(event)" ontouchmove="handleSwipeMove(event)" ontouchend="handleSwipeEnd(event)">
-                    <div class="swipe-info">
-                      <span class="history-number">${formatDigitNumber(item.digitNumber)}</span>
-                      <span class="history-timestamp show-on-mobile" style="display: none; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">${formatThaiDateTime(item.timestamp)}</span>
-                    </div>
-                    <div class="swipe-timestamp-col hide-on-mobile">
-                      <span class="history-timestamp">${formatThaiDateTime(item.timestamp)}</span>
-                    </div>
-                    <div class="swipe-action-col hide-on-mobile">
-                      <button class="btn-delete-row" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('tr'))" title="ลบข้อมูล">
-                        <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
-                      </button>
-                    </div>
+              <div class="history-item" data-number="${item.digitNumber}" data-time="${item.timestamp}">
+                <div class="swipe-wrapper" ontouchstart="handleSwipeStart(event)" ontouchmove="handleSwipeMove(event)" ontouchend="handleSwipeEnd(event)">
+                  <div class="swipe-info">
+                    <span class="history-number">${formatDigitNumber(item.digitNumber)}</span>
+                    <span class="history-timestamp show-on-mobile" style="display: none; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">${formatThaiDateTime(item.timestamp)}</span>
                   </div>
-                  <!-- ปุ่มลบสำหรับ Mobile Swipe ที่ซ่อนอยู่ด้านหลัง -->
-                  <div class="swipe-delete-action" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('tr'))">
-                    <i data-lucide="trash-2"></i>
-                    <span>ลบ</span>
+                  <div class="swipe-timestamp-col hide-on-mobile">
+                    <span class="history-timestamp">${formatThaiDateTime(item.timestamp)}</span>
                   </div>
-                </td>
-              </tr>
+                  <div class="swipe-action-col hide-on-mobile">
+                    <button class="btn-delete-row" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('.history-item'))" title="ลบข้อมูล">
+                      <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
+                    </button>
+                  </div>
+                </div>
+                <!-- ปุ่มลบสำหรับ Mobile Swipe ที่ซ่อนอยู่ด้านหลัง -->
+                <div class="swipe-delete-action" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('.history-item'))">
+                  <i data-lucide="trash-2"></i>
+                  <span>ลบ</span>
+                </div>
+              </div>
             `;
           });
 
           tbody.innerHTML = rowsHtml;
-          table.style.display = 'table';
+          table.style.display = 'block';
         } else {
           empty.style.display = 'flex';
         }
       } catch (err) {
         console.error(err);
         loading.style.display = 'none';
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--danger); font-weight: 500; padding: 14px 16px;">ดึงข้อมูลล้มเหลว ตรวจสอบสิทธิ์หรือสลับแท็บใหม่</td></tr>';
-        table.style.display = 'table';
+        tbody.innerHTML = '<div style="text-align: center; color: var(--danger); font-weight: 500; padding: 20px;">ดึงข้อมูลล้มเหลว ตรวจสอบสิทธิ์หรือสลับแท็บใหม่</div>';
+        table.style.display = 'block';
       } finally {
         syncIcon.classList.remove('spinner');
         lucide.createIcons();
@@ -2334,8 +2347,8 @@
           STATE.history = data.data;
 
           // อัปเดตตารางประวัติในแท็บ 1 ด้วย
-          const tbody = document.getElementById('history-tbody');
-          const table = document.getElementById('history-table');
+          const tbody = document.getElementById('history-items-container');
+          const table = document.getElementById('history-list-container');
           const empty = document.getElementById('history-empty');
 
           if (tbody) {
@@ -2344,33 +2357,31 @@
               let rowsHtml = '';
               data.data.forEach((item, index) => {
                 rowsHtml += `
-                  <tr class="swipe-row" data-number="${item.digitNumber}" data-time="${item.timestamp}">
-                    <td colspan="3" style="padding: 0; position: relative;">
-                      <div class="swipe-wrapper" ontouchstart="handleSwipeStart(event)" ontouchmove="handleSwipeMove(event)" ontouchend="handleSwipeEnd(event)">
-                        <div class="swipe-info">
-                          <span class="history-number">${formatDigitNumber(item.digitNumber)}</span>
-                          <span class="history-timestamp show-on-mobile" style="display: none; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">${formatThaiDateTime(item.timestamp)}</span>
-                        </div>
-                        <div class="swipe-timestamp-col hide-on-mobile">
-                          <span class="history-timestamp">${formatThaiDateTime(item.timestamp)}</span>
-                        </div>
-                        <div class="swipe-action-col hide-on-mobile">
-                          <button class="btn-delete-row" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('tr'))" title="ลบข้อมูล">
-                            <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
-                          </button>
-                        </div>
+                  <div class="history-item" data-number="${item.digitNumber}" data-time="${item.timestamp}">
+                    <div class="swipe-wrapper" ontouchstart="handleSwipeStart(event)" ontouchmove="handleSwipeMove(event)" ontouchend="handleSwipeEnd(event)">
+                      <div class="swipe-info">
+                        <span class="history-number">${formatDigitNumber(item.digitNumber)}</span>
+                        <span class="history-timestamp show-on-mobile" style="display: none; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">${formatThaiDateTime(item.timestamp)}</span>
                       </div>
-                      <!-- ปุ่มลบสำหรับ Mobile Swipe ที่ซ่อนอยู่ด้านหลัง -->
-                      <div class="swipe-delete-action" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('tr'))">
-                        <i data-lucide="trash-2"></i>
-                        <span>ลบ</span>
+                      <div class="swipe-timestamp-col hide-on-mobile">
+                        <span class="history-timestamp">${formatThaiDateTime(item.timestamp)}</span>
                       </div>
-                    </td>
-                  </tr>
+                      <div class="swipe-action-col hide-on-mobile">
+                        <button class="btn-delete-row" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('.history-item'))" title="ลบข้อมูล">
+                          <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- ปุ่มลบสำหรับ Mobile Swipe ที่ซ่อนอยู่ด้านหลัง -->
+                    <div class="swipe-delete-action" onclick="confirmDeleteRow('${item.digitNumber}', '${item.timestamp}', this.closest('.history-item'))">
+                      <i data-lucide="trash-2"></i>
+                      <span>ลบ</span>
+                    </div>
+                  </div>
                 `;
               });
               tbody.innerHTML = rowsHtml;
-              table.style.display = 'table';
+              table.style.display = 'block';
               empty.style.display = 'none';
             } else {
               table.style.display = 'none';
