@@ -267,8 +267,18 @@ function deleteDigitNumber(username, digitNumber, timestamp) {
   let searchNum = String(digitNumber).trim();
   if (searchNum.length === 9) searchNum = '0' + searchNum;
   
-  // แปลงค่า timestamp ให้เป็น String เพื่อเปรียบเทียบ
-  const searchTime = timestamp ? String(timestamp).trim() : '';
+  // แปลง timestamp ที่ส่งมาจากเว็บให้เป็น Unix Timestamp (หน่วยวินาที) เพื่อการเปรียบเทียบมาตรฐานสากล
+  let searchTimeSec = 0;
+  if (timestamp) {
+    try {
+      const parsedDate = new Date(timestamp);
+      if (!isNaN(parsedDate.getTime())) {
+        searchTimeSec = Math.floor(parsedDate.getTime() / 1000);
+      }
+    } catch(e) {
+      Logger.log('Error parsing search timestamp: ' + e);
+    }
+  }
 
   let foundRow = -1;
   // วนหาจากล่างขึ้นบนเพื่อให้เจอตัวล่าสุดที่ตรงกับเงื่อนไข
@@ -277,21 +287,27 @@ function deleteDigitNumber(username, digitNumber, timestamp) {
     let dbNum = String(values[i][2]).trim();
     if (dbNum.length === 9) dbNum = '0' + dbNum;
     
-    // แปลงข้อมูลวันที่ในชีตให้อยู่ในฟอร์แมต String เผื่อเปรียบเทียบ
-    let dbTime = '';
-    if (values[i][3]) {
-      if (values[i][3] instanceof Date) {
-        const timezone = Session.getScriptTimeZone() || 'Asia/Bangkok';
-        dbTime = Utilities.formatDate(values[i][3], timezone, 'yyyy-MM-dd HH:mm:ss');
-      } else {
-        dbTime = String(values[i][3]).trim();
-      }
-    }
-    
-    // ตรวจสอบความสอดคล้อง
+    // 1. ตรวจสอบข้อมูลผู้ใช้และตัวเลขลูกค้าตรงกันก่อน
     if (dbUser === searchUser && dbNum === searchNum) {
-      if (!searchTime || dbTime === searchTime || String(values[i][3]).trim() === searchTime) {
-        foundRow = i + 1; // 1-indexed
+      // 2. ถ้าหากฝั่งหน้าเว็บส่งเวลามา และมีเวลาในฐานข้อมูล ให้ตรวจสอบเปรียบเทียบเวลาด้วย
+      if (searchTimeSec > 0 && values[i][3]) {
+        try {
+          const dbDate = new Date(values[i][3]);
+          if (!isNaN(dbDate.getTime())) {
+            const dbTimeSec = Math.floor(dbDate.getTime() / 1000);
+            
+            // ยอมให้เวลาคลาดเคลื่อนได้ไม่เกิน 10 วินาทีเพื่อความทนทานต่อ Network delay หรือ Timezone offset
+            if (Math.abs(dbTimeSec - searchTimeSec) <= 10) {
+              foundRow = i + 1; // 1-indexed
+              break;
+            }
+          }
+        } catch(e) {
+          Logger.log('Error parsing db timestamp: ' + e);
+        }
+      } else {
+        // หากไม่มีข้อมูลเวลาให้ตรวจสอบ หรือแปลงเวลาผิดพลาด ให้ลบรายการล่าสุดที่ตรงกับ Username และหมายเลขลูกค้าทันที (Fallback System)
+        foundRow = i + 1;
         break;
       }
     }
