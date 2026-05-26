@@ -1386,8 +1386,8 @@
     <div class="modal-card">
       <div class="modal-header">
         <h3 class="modal-title">
-          <i data-lucide="cog" style="color: var(--primary);"></i>
-          ตั้งค่าการเชื่อมต่อ API
+          <i data-lucide="user-cog" style="color: var(--primary);"></i>
+          ตั้งค่าข้อมูลส่วนตัว
         </h3>
         <button class="btn-close-modal" onclick="closeSettingsModal()">
           <i data-lucide="x" style="width: 24px; height: 24px;"></i>
@@ -1395,29 +1395,35 @@
       </div>
 
       <form id="settings-form" onsubmit="saveSettings(event)">
-        <div class="form-group">
-          <label class="form-label" for="api-url">Google Apps Script URL (Web App)</label>
+        <div class="form-group" style="margin-bottom: 1.2rem;">
+          <label class="form-label" for="edit-username">เปลี่ยน ชื่อผู้ใช้งาน</label>
           <div class="input-wrapper">
-            <i data-lucide="link" class="prefix-icon"></i>
-            <input type="url" id="api-url" class="form-input" placeholder="https://script.google.com/macros/s/.../exec"
-              required>
+            <i data-lucide="user" class="prefix-icon"></i>
+            <input type="text" id="edit-username" class="form-input" placeholder="กรอกชื่อผู้ใช้งานใหม่..." required autocomplete="off">
           </div>
-          <div class="help-text">
-            วาง URL ของ <strong>Web App API</strong> ที่ได้จากการ Deploy สคริปต์ <strong>Code.gs</strong> ในหน้าต่าง
-            Apps Script
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.2rem;">
+          <label class="form-label" for="edit-display-name">เปลี่ยน ชื่อแสดงผล</label>
+          <div class="input-wrapper">
+            <i data-lucide="user-check" class="prefix-icon"></i>
+            <input type="text" id="edit-display-name" class="form-input" placeholder="กรอกชื่อแสดงผลใหม่..." required autocomplete="off">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.2rem;">
+          <label class="form-label" for="edit-password">เปลี่ยน รหัสผ่าน</label>
+          <div class="input-wrapper">
+            <i data-lucide="lock" class="prefix-icon"></i>
+            <input type="password" id="edit-password" class="form-input" placeholder="กรอกรหัสผ่านใหม่..." required autocomplete="new-password">
+            <i data-lucide="eye" class="toggle-pass" id="edit-password-toggle" onclick="toggleEditPasswordVisibility()"></i>
           </div>
         </div>
 
         <div style="display: flex; gap: 12px; margin-top: 2rem;">
-          <button type="button" class="btn-sync"
-            style="flex: 1; padding: 12px; font-size: 0.95rem; justify-content: center; border-radius: 14px;"
-            onclick="testApiConnection()">
-            <i data-lucide="sparkles" id="test-icon"></i>
-            ทดสอบการเชื่อมต่อ
-          </button>
-          <button type="submit" class="btn-submit" style="flex: 1; margin: 0; box-shadow: none;">
+          <button type="submit" class="btn-submit" style="flex: 1; margin: 0; box-shadow: none; justify-content: center;">
             <i data-lucide="save" style="width: 18px; height: 18px;"></i>
-            บันทึกการตั้งค่า
+            บันทึกการเปลี่ยนแปลง
           </button>
         </div>
       </form>
@@ -1586,8 +1592,27 @@
 
     // ─── MODAL CONTROLS ────────────────────────────────────
     function openSettingsModal() {
-      document.getElementById('api-url').value = STATE.apiUrl;
+      if (!STATE.currentUser) {
+        showToast('กรุณาเข้าสู่ระบบก่อนทำการตั้งค่า', 'warning');
+        return;
+      }
+      document.getElementById('edit-username').value = STATE.currentUser.username;
+      document.getElementById('edit-display-name').value = STATE.currentUser.name;
+      document.getElementById('edit-password').value = '';
       document.getElementById('settings-modal').classList.add('active');
+    }
+
+    function toggleEditPasswordVisibility() {
+      const passInput = document.getElementById('edit-password');
+      const passToggle = document.getElementById('edit-password-toggle');
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        passToggle.setAttribute('data-lucide', 'eye-off');
+      } else {
+        passInput.type = 'password';
+        passToggle.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
     }
 
     function closeSettingsModal() {
@@ -1619,8 +1644,7 @@
 
       // ตรวจสอบว่าตั้งค่า API หรือยัง
       if (!STATE.apiUrl) {
-        showToast('กรุณาคลิกปุ่มตั้งค่า API ก่อนเข้าสู่ระบบ', 'warning');
-        openSettingsModal();
+        showToast('ไม่พบที่อยู่เชื่อมต่อฐานข้อมูล กรุณาตรวจสอบระบบเบื้องหลัง', 'error');
         return;
       }
 
@@ -1690,16 +1714,58 @@
     }
 
     // ─── API SETTINGS LOGIC ────────────────────────────────
-    function saveSettings(e) {
+    async function saveSettings(e) {
       e.preventDefault();
-      const urlInput = document.getElementById('api-url').value.trim();
+      if (!STATE.apiUrl || !STATE.currentUser) {
+        showToast('ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาล็อกอินใหม่', 'error');
+        return;
+      }
 
-      STATE.apiUrl = urlInput;
-      localStorage.setItem('aisFix_api_url', urlInput);
+      const newUsername = document.getElementById('edit-username').value.trim();
+      const newDisplayName = document.getElementById('edit-display-name').value.trim();
+      const newPassword = document.getElementById('edit-password').value.trim();
 
-      checkApiConfigStatus();
-      closeSettingsModal();
-      showToast('บันทึกการตั้งค่าการเชื่อมต่อ API เรียบร้อยแล้ว', 'success');
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const origHtml = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="lucide-refresh-cw spinner" style="width: 18px; height: 18px;"></i> กำลังบันทึก...';
+      lucide.createIcons();
+
+      const payload = {
+        action: 'updateProfile',
+        currentUsername: STATE.currentUser.username,
+        newUsername: newUsername,
+        newPassword: newPassword,
+        newName: newDisplayName
+      };
+
+      try {
+        const response = await fetch(STATE.apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (data.status === 'ok') {
+          STATE.currentUser = data.user;
+          sessionStorage.setItem('aisFix_user', JSON.stringify(data.user));
+
+          updateUserDisplay();
+          await loadUserHistory();
+          closeSettingsModal();
+          showToast('บันทึกการปรับปรุงข้อมูลส่วนตัวเรียบร้อยแล้ว', 'success');
+        } else {
+          showToast(data.message || 'เกิดข้อผิดพลาดในการอัปเดตข้อมูล', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('การส่งข้อมูลล้มเหลว กรุณาตรวจสอบอินเทอร์เน็ต', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origHtml;
+        lucide.createIcons();
+      }
     }
 
     async function testApiConnection() {

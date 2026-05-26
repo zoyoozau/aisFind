@@ -47,6 +47,8 @@ function doPost(e) {
       result = loginUser(body.username, body.password);
     } else if (action === 'addData') {
       result = addDigitNumber(body.username, body.digitNumber);
+    } else if (action === 'updateProfile') {
+      result = updateUserProfile(body.currentUsername, body.newUsername, body.newPassword, body.newName);
     } else {
       result = { status: 'error', message: 'ไม่พบ Action ที่ระบุ หรือรูปแบบ POST ไม่ถูกต้อง' };
     }
@@ -183,4 +185,67 @@ function getUserData(username) {
   }
   
   return { status: 'ok', data: userRows };
+}
+
+// ─── ฟังก์ชันปรับปรุงข้อมูลส่วนตัวผู้ใช้ (เปลี่ยน username, password, name) ──────
+function updateUserProfile(currentUsername, newUsername, newPassword, newName) {
+  if (!currentUsername) {
+    return { status: 'error', message: 'ไม่พบข้อมูลผู้ใช้ปัจจุบัน' };
+  }
+  if (!newUsername || !newPassword || !newName) {
+    return { status: 'error', message: 'กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง' };
+  }
+
+  const sheet = getUsersSheet();
+  const values = sheet.getDataRange().getValues();
+  const searchUser = String(currentUsername).trim().toLowerCase();
+  const targetNewUser = String(newUsername).trim().toLowerCase();
+
+  // 1. ตรวจสอบก่อนว่าชื่อผู้ใช้ใหม่ไปซ้ำกับคนอื่นในระบบหรือไม่ (ยกเว้นตัวเอง)
+  for (let i = 1; i < values.length; i++) {
+    const dbUsername = String(values[i][0]).trim().toLowerCase();
+    if (dbUsername === targetNewUser && searchUser !== targetNewUser) {
+      return { status: 'error', message: 'ชื่อผู้ใช้งานใหม่นี้มีผู้ใช้รายอื่นใช้แล้ว' };
+    }
+  }
+
+  // 2. ค้นหาแถวของผู้ใช้ปัจจุบันและปรับปรุงค่า
+  let foundRow = -1;
+  for (let i = 1; i < values.length; i++) {
+    const dbUsername = String(values[i][0]).trim().toLowerCase();
+    if (dbUsername === searchUser) {
+      foundRow = i + 1; // getRange ของ Google Sheets เป็น 1-indexed และ i เริ่มจาก 0
+      break;
+    }
+  }
+
+  if (foundRow === -1) {
+    return { status: 'error', message: 'ไม่พบผู้ใช้ที่ต้องการแก้ไขข้อมูลในระบบ' };
+  }
+
+  // อัปเดตค่าลงในแถว [username, password, name, createdAt]
+  sheet.getRange(foundRow, 1).setValue(String(newUsername).trim());
+  sheet.getRange(foundRow, 2).setValue(String(newPassword).trim());
+  sheet.getRange(foundRow, 3).setValue(String(newName).trim());
+
+  // 3. หากมีการเปลี่ยน username ให้ทำการปรับปรุงประวัติของยูสเดิมในชีต Data ด้วยเพื่อให้ดึงประวัติเดิมได้
+  if (searchUser !== targetNewUser) {
+    const dataSheet = getDataSheet();
+    const dataValues = dataSheet.getDataRange().getValues();
+    for (let j = 1; j < dataValues.length; j++) {
+      const dataUser = String(dataValues[j][1]).trim().toLowerCase();
+      if (dataUser === searchUser) {
+        dataSheet.getRange(j + 1, 2).setValue(targetNewUser);
+      }
+    }
+  }
+
+  return { 
+    status: 'ok', 
+    message: 'ปรับปรุงข้อมูลส่วนตัวเรียบร้อยแล้ว',
+    user: {
+      username: String(newUsername).trim(),
+      name: String(newName).trim()
+    }
+  };
 }
