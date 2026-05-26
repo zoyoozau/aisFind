@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>aisFix — บันทึกข้อมูลดิจิทัลอัจฉริยะ</title>
+  <title>AisTh — บันทึกข้อมูลดิจิทัลอัจฉริยะ</title>
 
   <!-- Google Fonts: Outfit & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1092,7 +1092,7 @@
         <div class="logo-glow">
           <i data-lucide="shield-check"></i>
         </div>
-        <h1 class="auth-title">aisFix</h1>
+        <h1 class="auth-title">AisTh</h1>
         <p class="auth-subtitle">ระบบเข้าสู่ระบบข้อมูลอัจฉริยะ</p>
       </div>
 
@@ -1133,7 +1133,7 @@
             <i data-lucide="activity"></i>
           </div>
           <div>
-            <h1 class="dash-title">aisFix</h1>
+            <h1 class="dash-title">AisTh</h1>
           </div>
         </div>
 
@@ -1156,11 +1156,11 @@
       <nav class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('f1-panel', this)">
           <i data-lucide="hash"></i>
-          บันทึก 10 หลัก
+          กรอกเลขลูกค้า
         </button>
         <button class="tab-btn" onclick="switchTab('f2-panel', this)">
           <i data-lucide="shield-check"></i>
-          ตรวจสอบ & เปรียบเทียบ
+          ตรวจสอบชุดเลขของลูกค้า
         </button>
       </nav>
 
@@ -1201,7 +1201,7 @@
               </div>
 
               <button type="submit" id="record-submit" class="btn-submit" disabled style="margin-top: 1rem;">
-                <span id="record-btn-text">บันทึกลง Google Sheet</span>
+                <span id="record-btn-text">บันทึกข้อมูลลูกค้า</span>
                 <i data-lucide="arrow-right-circle" id="record-btn-icon"></i>
               </button>
             </form>
@@ -1280,7 +1280,7 @@
                   ล้างค่า
                 </button>
                 <button type="submit" id="f2-submit" class="btn-submit" style="margin: 0; flex-grow: 1;">
-                  <span id="f2-btn-text">ตรวจสอบและเปรียบเทียบ</span>
+                  <span id="f2-btn-text">ตรวจสอบชุดเลขของลูกค้า</span>
                   <i data-lucide="sparkles" id="f2-btn-icon"></i>
                 </button>
               </div>
@@ -1832,7 +1832,7 @@
         showToast('เชื่อมต่อล้มเหลว กรุณาตรวจสอบอินเทอร์เน็ตและสิทธิ์ของชีต', 'error');
         submitBtn.disabled = false;
       } finally {
-        btnText.textContent = 'บันทึกลง Google Sheet';
+        btnText.textContent = 'บันทึกข้อมูลลูกค้า';
         btnIcon.setAttribute('data-lucide', 'arrow-right-circle');
         btnIcon.classList.remove('spinner');
         lucide.createIcons();
@@ -2037,7 +2037,7 @@
       const btnIcon = document.getElementById('f2-btn-icon');
 
       btn.disabled = false;
-      btnText.textContent = 'ตรวจสอบและเปรียบเทียบ';
+      btnText.textContent = 'ตรวจสอบชุดเลขของลูกค้า';
       btnIcon.setAttribute('data-lucide', 'sparkles');
       btnIcon.classList.remove('spinner');
       lucide.createIcons();
