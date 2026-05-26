@@ -1,0 +1,2043 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>aisFix — บันทึกข้อมูลดิจิทัลอัจฉริยะ</title>
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* ─── DESIGN SYSTEM & VARIABLES ────────────────────────── */
+    :root {
+      /* Premium Light Mode (Default) */
+      --bg-dark: #f8fafc;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --bg-card-hover: rgba(255, 255, 255, 0.95);
+      --primary: #10b981; /* Cyber Green */
+      --primary-glow: rgba(16, 185, 129, 0.15);
+      --primary-dark: #059669;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --border-focus: rgba(16, 185, 129, 0.4);
+      --danger: #ef4444;
+      --danger-glow: rgba(239, 68, 68, 0.15);
+      --warning: #d97706;
+      --warning-text: #b45309;
+      --card-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.08);
+      --input-bg: rgba(15, 23, 42, 0.04);
+      --input-bg-focus: rgba(255, 255, 255, 1);
+      --table-header-bg: rgba(15, 23, 42, 0.04);
+      --table-row-hover: rgba(0, 0, 0, 0.02);
+      --stat-card-bg: rgba(0, 0, 0, 0.02);
+      --progress-track-bg: rgba(0, 0, 0, 0.05);
+      --bg-gradient: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.03) 0px, transparent 50%);
+      
+      --font-outfit: 'Outfit', sans-serif;
+      --font-inter: 'Inter', sans-serif;
+    }
+
+    html.dark-theme {
+      /* Premium Dark Mode */
+      --bg-dark: #090d16;
+      --bg-card: rgba(15, 23, 42, 0.65);
+      --bg-card-hover: rgba(30, 41, 59, 0.8);
+      --primary: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.35);
+      --primary-dark: #059669;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(16, 185, 129, 0.5);
+      --danger: #ef4444;
+      --danger-glow: rgba(239, 68, 68, 0.25);
+      --warning: #f59e0b;
+      --warning-text: #fbd38d;
+      --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+      --input-bg: rgba(15, 23, 42, 0.4);
+      --input-bg-focus: rgba(15, 23, 42, 0.8);
+      --table-header-bg: rgba(15, 23, 42, 0.8);
+      --table-row-hover: rgba(255, 255, 255, 0.02);
+      --stat-card-bg: rgba(255, 255, 255, 0.02);
+      --progress-track-bg: rgba(255, 255, 255, 0.05);
+      --bg-gradient: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: var(--bg-gradient);
+      background-attachment: fixed;
+      font-family: var(--font-inter);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ─── SCROLLBAR ────────────────────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+
+    /* ─── LAYOUT & CONTAINERS ───────────────────────────────── */
+    .app-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* ─── TOAST NOTIFICATIONS ──────────────────────────────── */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 380px;
+      width: calc(100% - 48px);
+    }
+
+    .toast {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      transform: translateY(20px);
+      opacity: 0;
+      animation: toastIn 0.3s forwards;
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--primary);
+      color: var(--text-main);
+    }
+
+    .toast.error {
+      border-left: 4px solid var(--danger);
+      color: var(--text-main);
+    }
+
+    .toast.warning {
+      border-left: 4px solid var(--warning);
+      color: var(--text-main);
+    }
+
+    @keyframes toastIn {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* ─── GLASS CARD STYLE ─────────────────────────────────── */
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: var(--card-shadow);
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.4), transparent);
+    }
+
+    /* ─── BANNER SETTING NOTIFICATION ─────────────────────── */
+    .setup-banner {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
+      border: 1px dashed rgba(245, 158, 11, 0.3);
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .setup-banner span {
+      font-size: 0.9rem;
+      color: var(--warning-text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .setup-btn {
+      background: #f59e0b;
+      color: #000;
+      font-weight: 600;
+      font-size: 0.8rem;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .setup-btn:hover {
+      background: #d97706;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+
+    /* ─── 1. LOGIN SCREEN ─────────────────────────────────── */
+    .auth-wrapper {
+      max-width: 450px;
+      width: 100%;
+      margin: 0 auto;
+      display: none; /* ควบคุมด้วย JS */
+    }
+
+    .auth-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo-glow {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px var(--primary-glow);
+      margin-bottom: 1rem;
+    }
+
+    .logo-glow i {
+      color: #fff;
+      font-size: 2rem;
+    }
+
+    .auth-title {
+      font-family: var(--font-outfit);
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--text-main) 60%, var(--text-muted));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.25rem;
+    }
+
+    .auth-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper i.prefix-icon {
+      position: absolute;
+      left: 16px;
+      color: var(--text-muted);
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 14px 16px 14px 48px;
+      color: var(--text-main);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 15px var(--primary-glow);
+      background: var(--input-bg-focus);
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 16px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .toggle-pass:hover {
+      color: var(--text-main);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      font-family: var(--font-outfit);
+      font-size: 1.05rem;
+      font-weight: 700;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px var(--primary-glow);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ─── 2. DASHBOARD MAIN SCREEN ─────────────────────────── */
+    .dashboard-wrapper {
+      display: none; /* ควบคุมด้วย JS */
+      opacity: 0;
+      animation: fadeIn 0.4s forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* ─── HEADER ──────────────────────────────────────────── */
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .dash-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-small {
+      background: var(--primary);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .logo-small i {
+      color: #fff;
+      font-size: 1.2rem;
+    }
+
+    .dash-title {
+      font-family: var(--font-outfit);
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-info {
+      text-align: right;
+    }
+
+    .user-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      color: var(--primary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-icon {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+
+    .btn-icon:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--primary);
+      border-color: var(--primary-glow);
+    }
+
+    .btn-logout {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .btn-logout:hover {
+      background: var(--danger);
+      color: #fff;
+      box-shadow: 0 4px 15px var(--danger-glow);
+      border-color: var(--danger);
+    }
+
+    /* ─── TAB NAVIGATION ──────────────────────────────────── */
+    .tab-bar {
+      display: flex;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 6px;
+      margin-bottom: 2rem;
+      gap: 6px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 12px;
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      font-size: 0.95rem;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .tab-btn.active {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--primary);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--text-main);
+      background: var(--table-row-hover);
+    }
+
+    /* ─── TAB CONTENT PANELS ──────────────────────────────── */
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* ─── GRID LAYOUT: F1 (Recorder) ──────────────────────── */
+    .recorder-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1.8fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .recorder-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* CARD SUB-DESIGN */
+    .panel-card {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card-title {
+      font-family: var(--font-outfit);
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+    }
+
+    /* INPUT 10-DIGIT BOX */
+    .digit-box-wrapper {
+      position: relative;
+    }
+
+    .digit-input-container {
+      display: flex;
+      align-items: center;
+      background: rgba(9, 13, 22, 0.6);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 8px 16px;
+      position: relative;
+    }
+
+    .digit-input-container:focus-within {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .digit-icon {
+      color: var(--text-muted);
+      margin-right: 12px;
+    }
+
+    .digit-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-family: var(--font-outfit);
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-align: center;
+      padding: 8px 0;
+    }
+
+    /* ซ่อนลูกศรขึ้นลงของ input number */
+    .digit-input::-webkit-outer-spin-button,
+    .digit-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .digit-clear-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: none; /* จะปรากฏขึ้นเมื่อมีค่า */
+      padding: 4px;
+    }
+
+    .digit-clear-btn:hover {
+      color: var(--danger);
+    }
+
+    /* INPUT VALIDATION STATE INDICATOR */
+    .validation-indicator {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      padding: 0 4px;
+    }
+
+    .validation-status {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .validation-status.valid {
+      color: var(--primary);
+    }
+
+    .validation-status.invalid {
+      color: var(--danger);
+    }
+
+    /* HISTORY LIST / TABLE */
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-sync {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-sync:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--primary);
+      border-color: var(--primary-glow);
+    }
+
+    .history-list-wrapper {
+      max-height: 400px;
+      overflow-y: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .history-table th {
+      background: var(--table-header-bg);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+    }
+
+    .history-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.9rem;
+    }
+
+    .history-table tbody tr:hover {
+      background: var(--table-row-hover);
+    }
+
+    .history-number {
+      font-family: var(--font-outfit);
+      font-weight: 700;
+      color: var(--text-main);
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .history-timestamp {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .status-badge {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--primary);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .empty-state {
+      padding: 3rem 1.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      gap: 12px;
+    }
+
+    .empty-state i {
+      font-size: 2.5rem;
+      opacity: 0.3;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ─── TAB 2: COMING SOON ──────────────────────────────── */
+    .locked-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 2rem;
+      text-align: center;
+      gap: 1.5rem;
+    }
+
+    .locked-icon-wrapper {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+      border: 1px solid var(--border-color);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+      position: relative;
+    }
+
+    .locked-icon-wrapper i {
+      font-size: 2.2rem;
+      color: var(--primary);
+    }
+
+    .locked-title {
+      font-family: var(--font-outfit);
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .locked-desc {
+      color: var(--text-muted);
+      max-width: 450px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* ─── OVERLAY MODAL: SETTINGS ────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      max-width: 500px;
+      width: calc(100% - 32px);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      border-radius: 24px;
+      padding: 2rem;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-family: var(--font-outfit);
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .btn-close-modal:hover {
+      color: var(--text-main);
+    }
+
+    .help-text {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.1);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    .help-text strong {
+      color: var(--primary);
+    }
+
+    /* ─── LOADING SPINNER ─────────────────────────────────── */
+    .spinner {
+      animation: rotate 2s linear infinite;
+      width: 20px;
+      height: 20px;
+    }
+
+    .spinner .path {
+      stroke: currentColor;
+      stroke-linecap: round;
+      animation: dash 1.5s ease-in-out infinite;
+    }
+
+    @keyframes rotate {
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes dash {
+      0% {
+        stroke-dasharray: 1, 150;
+        stroke-dashoffset: 0;
+      }
+      50% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -35;
+      }
+      100% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -124;
+      }
+    }
+
+    /* ─── FIXED THEME TOGGLE BUTTON ────────────────────────── */
+    .theme-toggle-fixed {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .theme-toggle-fixed:hover {
+      background: var(--bg-card-hover);
+      color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px var(--primary-glow);
+    }
+
+    .theme-toggle-fixed i {
+      width: 20px;
+      height: 20px;
+      transition: transform 0.5s ease;
+    }
+
+    .theme-toggle-fixed:hover i {
+      transform: rotate(30deg);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- FIXED THEME TOGGLE BUTTON -->
+  <button id="theme-toggle" class="theme-toggle-fixed" title="เปลี่ยนธีม (มืด/สว่าง)" onclick="toggleTheme()">
+    <i data-lucide="moon"></i>
+  </button>
+
+  <div class="app-container">
+
+    <!-- SETUP BANNER (แสดงเมื่อยังไม่มีการตั้งค่า API) -->
+    <div id="setup-banner-alert" class="setup-banner" style="display: none;">
+      <span>
+        <i class="lucide-alert-triangle" style="color: var(--warning);"></i>
+        ระบบยังไม่ได้เชื่อมต่อ Google Sheets API กรุณาตั้งค่าเพื่อเริ่มบันทึกข้อมูล
+      </span>
+      <button class="setup-btn" onclick="openSettingsModal()">
+        <i class="lucide-settings" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i>
+        ตั้งค่าเดี๋ยวนี้
+      </button>
+    </div>
+
+    <!-- 1. หน้าล็อกอิน (AUTH SCREEN) -->
+    <div id="auth-screen" class="auth-wrapper glass-card">
+      <div class="auth-logo">
+        <div class="logo-glow">
+          <i data-lucide="shield-check"></i>
+        </div>
+        <h1 class="auth-title">aisFix</h1>
+        <p class="auth-subtitle">ระบบเข้าสู่ระบบข้อมูลอัจฉริยะ</p>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="username">ชื่อผู้ใช้งาน</label>
+          <div class="input-wrapper">
+            <i data-lucide="user" class="prefix-icon"></i>
+            <input type="text" id="username" class="form-input" placeholder="กรอกชื่อผู้ใช้..." required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">รหัสผ่าน</label>
+          <div class="input-wrapper">
+            <i data-lucide="lock" class="prefix-icon"></i>
+            <input type="password" id="password" class="form-input" placeholder="กรอกรหัสผ่าน..." required autocomplete="current-password">
+            <i data-lucide="eye" class="toggle-pass" id="password-toggle" onclick="togglePasswordVisibility()"></i>
+          </div>
+        </div>
+
+        <button type="submit" id="login-submit" class="btn-submit">
+          <span id="login-btn-text">เข้าสู่ระบบ</span>
+          <i data-lucide="log-in" id="login-btn-icon"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- 2. หน้าแดชบอร์ดหลัก (DASHBOARD SCREEN) -->
+    <div id="dashboard-screen" class="dashboard-wrapper glass-card">
+      
+      <!-- DASHBOARD HEADER -->
+      <header class="dash-header">
+        <div class="dash-logo">
+          <div class="logo-small">
+            <i data-lucide="activity"></i>
+          </div>
+          <div>
+            <h1 class="dash-title">aisFix</h1>
+          </div>
+        </div>
+
+        <div class="user-profile">
+          <div class="user-info">
+            <div class="user-name" id="user-display-name">ผู้ใช้งานระบบ</div>
+            <div class="user-role">ผู้บันทึกข้อมูล</div>
+          </div>
+          <button class="btn-icon" title="ตั้งค่าระบบ API" onclick="openSettingsModal()">
+            <i data-lucide="settings"></i>
+          </button>
+          <button class="btn-logout" onclick="handleLogout()">
+            <i data-lucide="log-out"></i>
+            ออกจากระบบ
+          </button>
+        </div>
+      </header>
+
+      <!-- TAB NAVIGATION -->
+      <nav class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('f1-panel', this)">
+          <i data-lucide="hash"></i>
+          ฟังก์ชันที่ 1: บันทึกเลข 10 หลัก
+        </button>
+        <button class="tab-btn" onclick="switchTab('f2-panel', this)">
+          <i data-lucide="lock-keyhole"></i>
+          ฟังก์ชันที่ 2: เร็วๆ นี้
+        </button>
+      </nav>
+
+      <!-- TAB PANELS -->
+      
+      <!-- PANEL 1: RECORDER & HISTORY -->
+      <div id="f1-panel" class="tab-panel active">
+        <div class="recorder-grid">
+          
+          <!-- LEFT: INPUT RECORDER -->
+          <section class="panel-card">
+            <h2 class="card-title">
+              <i data-lucide="plus-circle" style="color: var(--primary);"></i>
+              ป้อนหมายเลข 10 หลัก
+            </h2>
+            
+            <form id="record-form" onsubmit="handleRecordSubmit(event)">
+              <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="form-label">กรอกหมายเลข</label>
+                <div class="digit-box-wrapper">
+                  <div class="digit-input-container">
+                    <i data-lucide="keyboard" class="digit-icon"></i>
+                    <input 
+                      type="text" 
+                      id="digit-input" 
+                      class="digit-input" 
+                      placeholder="0000000000" 
+                      maxlength="10"
+                      pattern="\d{10}"
+                      inputmode="numeric"
+                      autocomplete="off"
+                      oninput="validateDigitInput(this)"
+                    >
+                    <button type="button" id="digit-clear" class="digit-clear-btn" onclick="clearDigitInput()">
+                      <i data-lucide="x-circle"></i>
+                    </button>
+                  </div>
+                  
+                  <div class="validation-indicator">
+                    <span id="digit-count-label">ป้อนแล้ว: 0 / 10 หลัก</span>
+                    <span id="validation-status" class="validation-status invalid">
+                      <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
+                      ยังไม่ถูกต้อง
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" id="record-submit" class="btn-submit" disabled style="margin-top: 1rem;">
+                <span id="record-btn-text">บันทึกลง Google Sheet</span>
+                <i data-lucide="arrow-right-circle" id="record-btn-icon"></i>
+              </button>
+            </form>
+          </section>
+
+          <!-- RIGHT: HISTORY LIST -->
+          <section class="panel-card">
+            <div class="history-header">
+              <h2 class="card-title" style="border-bottom: none; padding-bottom: 0;">
+                <i data-lucide="history" style="color: #3b82f6;"></i>
+                ประวัติการบันทึกของคุณ
+              </h2>
+              <button class="btn-sync" onclick="loadUserHistory()" title="รีเฟรชข้อมูล">
+                <i data-lucide="refresh-cw" id="sync-icon"></i>
+                ดึงข้อมูลใหม่
+              </button>
+            </div>
+
+            <div class="history-list-wrapper">
+              <table class="history-table" id="history-table">
+                <thead>
+                  <tr>
+                    <th># ID</th>
+                    <th>หมายเลข 10 หลัก</th>
+                    <th>วันที่ - เวลาบันทึก</th>
+                    <th>สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody id="history-tbody">
+                  <!-- แทรกข้อมูลด้วย JS -->
+                </tbody>
+              </table>
+
+              <!-- หน้าว่าง/ยังไม่มีข้อมูล -->
+              <div id="history-empty" class="empty-state" style="display: none;">
+                <i data-lucide="folder-open"></i>
+                <p>ไม่พบประวัติการบันทึกข้อมูลของคุณ</p>
+                <span style="font-size: 0.8rem; opacity: 0.7;">กรอกเลข 10 หลักด้านซ้ายเพื่อทำการบันทึกรายการแรก</span>
+              </div>
+
+              <!-- หน้ากำลังโหลดข้อมูล -->
+              <div id="history-loading" class="empty-state" style="display: none;">
+                <svg class="spinner" viewBox="0 0 50 50" style="color: var(--primary);">
+                  <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+                </svg>
+                <p style="margin-top: 8px;">กำลังดึงประวัติการบันทึกจาก Google Sheet...</p>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- PANEL 2: COMPARISON & SEARCH -->
+      <div id="f2-panel" class="tab-panel">
+        <div class="recorder-grid">
+          
+          <!-- LEFT: LARGE TEXTAREA INPUT -->
+          <section class="panel-card">
+            <h2 class="card-title">
+              <i data-lucide="file-text" style="color: var(--primary);"></i>
+              ป้อนชุดข้อมูลตรวจสอบ
+            </h2>
+            
+            <form id="f2-form" onsubmit="handleF2Check(event)">
+              <div class="form-group" style="margin-bottom: 1rem; display: flex; flex-direction: column; gap: 8px;">
+                <label class="form-label">วางข้อมูลทั้งหมดที่ต้องการตรวจสอบ</label>
+                <textarea 
+                  id="f2-textarea" 
+                  class="form-input" 
+                  style="min-height: 260px; font-family: var(--font-inter); line-height: 1.6; resize: vertical; padding: 16px; font-size: 0.95rem;" 
+                  placeholder="ตัวอย่างการวางข้อมูล:&#10;8805826272 ดุสิต โพธิ์พันธุ์&#10;8804496736 โกมล บุญสงค์&#10;8805800830 บุผาวรรณ พ่อค้า&#10;ไทย"
+                ></textarea>
+              </div>
+
+              <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-sync" style="padding: 12px 16px; border-radius: 14px;" onclick="clearF2Textarea()" title="ล้างข้อมูล">
+                  ล้างค่า
+                </button>
+                <button type="submit" id="f2-submit" class="btn-submit" style="margin: 0; flex-grow: 1;">
+                  <span id="f2-btn-text">ตรวจสอบและเปรียบเทียบ</span>
+                  <i data-lucide="sparkles" id="f2-btn-icon"></i>
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <!-- RIGHT: MATCHED RESULTS DISPLAY -->
+          <section class="panel-card" style="display: flex; flex-direction: column; justify-content: flex-start; gap: 1.5rem;">
+            
+            <!-- สถานะก่อนคลิกตรวจสอบ (Unchecked) -->
+            <div id="f2-results-unchecked" class="empty-state" style="padding: 5rem 1rem; flex-grow: 1;">
+              <i data-lucide="text-search" style="font-size: 3rem; color: var(--primary); opacity: 0.4;"></i>
+              <h3 style="font-family: var(--font-outfit); font-weight: 700; font-size: 1.3rem; margin-top: 10px; color: var(--text-main);">พร้อมเปรียบเทียบฐานข้อมูล</h3>
+              <p style="font-size: 0.85rem; max-width: 320px; line-height: 1.5; color: var(--text-muted);">วางชุดตัวเลขและรายละเอียดของคุณที่กล่องข้อมูลด้านซ้าย แล้วกดปุ่มตรวจสอบเพื่อเช็กรายการที่ตรงกันในฐานข้อมูลปัจจุบันทันที</p>
+            </div>
+
+            <!-- สถานะตรวจสอบแล้ว (Checked) -->
+            <div id="f2-results-checked" style="display: none; flex-direction: column; gap: 1.5rem; width: 100%;">
+              
+              <div class="history-header">
+                <h2 class="card-title" style="border-bottom: none; padding-bottom: 0;">
+                  <i data-lucide="check-square" style="color: var(--primary);"></i>
+                  ผลการตรวจสอบข้อมูล
+                </h2>
+              </div>
+
+              <!-- Stat Counters Grid -->
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center;">
+                <div style="background: var(--stat-card-bg); border: 1px solid var(--border-color); padding: 10px; border-radius: 12px;">
+                  <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">พบในข้อมูล</div>
+                  <div id="f2-stat-total" style="font-size: 1.6rem; font-weight: 800; font-family: var(--font-outfit); margin-top: 4px; color: var(--text-main);">0</div>
+                </div>
+                <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 10px; border-radius: 12px;">
+                  <div style="font-size: 0.75rem; color: var(--primary); font-weight: 600;">ตรงในระบบ</div>
+                  <div id="f2-stat-matched" style="font-size: 1.6rem; font-weight: 800; font-family: var(--font-outfit); margin-top: 4px; color: var(--primary);">0</div>
+                </div>
+                <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px; border-radius: 12px;">
+                  <div style="font-size: 0.75rem; color: #f87171; font-weight: 600;">ไม่มีในระบบ</div>
+                  <div id="f2-stat-unmatched" style="font-size: 1.6rem; font-weight: 800; font-family: var(--font-outfit); margin-top: 4px; color: #f87171;">0</div>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div style="background: var(--progress-track-bg); border-radius: 99px; height: 16px; overflow: hidden; display: flex; align-items: center; position: relative;">
+                <div id="f2-progress" style="background: linear-gradient(90deg, #3b82f6, var(--primary)); width: 0%; height: 100%; border-radius: 99px; transition: width 0.6s ease;"></div>
+                <span id="f2-progress-percent" style="position: absolute; right: 12px; font-size: 0.7rem; font-weight: 700; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">0%</span>
+              </div>
+
+              <!-- MATCHED ITEMS LIST -->
+              <div>
+                <h4 style="font-size: 0.85rem; text-transform: uppercase; font-weight: 700; color: var(--primary); letter-spacing: 0.05em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="shield-check" style="width: 16px; height: 16px;"></i>
+                  รายการที่ตรงกับฐานข้อมูล
+                </h4>
+                <div id="f2-matched-list" style="max-height: 250px; overflow-y: auto; padding-right: 4px;">
+                  <!-- แทรกรวมข้อมูลด้วย JS -->
+                </div>
+              </div>
+
+              <!-- UNMATCHED ITEMS LIST -->
+              <div id="f2-unmatched-wrapper" style="display: none;">
+                <h4 style="font-size: 0.85rem; text-transform: uppercase; font-weight: 700; color: #f87171; letter-spacing: 0.05em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="shield-alert" style="width: 16px; height: 16px;"></i>
+                  รายการที่ยังไม่มีในระบบ (ไม่ตรง)
+                </h4>
+                <div id="f2-unmatched-list" style="max-height: 180px; overflow-y: auto; padding-right: 4px;">
+                  <!-- แทรกรวมข้อมูลด้วย JS -->
+                </div>
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ─── OVERLAY MODAL: CONFIGURATION SETTINGS ─────────────── -->
+  <div id="settings-modal" class="modal-overlay" onclick="closeSettingsModalOnOverlay(event)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i data-lucide="cog" style="color: var(--primary);"></i>
+          ตั้งค่าการเชื่อมต่อ API
+        </h3>
+        <button class="btn-close-modal" onclick="closeSettingsModal()">
+          <i data-lucide="x" style="width: 24px; height: 24px;"></i>
+        </button>
+      </div>
+
+      <form id="settings-form" onsubmit="saveSettings(event)">
+        <div class="form-group">
+          <label class="form-label" for="api-url">Google Apps Script URL (Web App)</label>
+          <div class="input-wrapper">
+            <i data-lucide="link" class="prefix-icon"></i>
+            <input 
+              type="url" 
+              id="api-url" 
+              class="form-input" 
+              placeholder="https://script.google.com/macros/s/.../exec" 
+              required
+            >
+          </div>
+          <div class="help-text">
+            วาง URL ของ <strong>Web App API</strong> ที่ได้จากการ Deploy สคริปต์ <strong>Code.gs</strong> ในหน้าต่าง Apps Script
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 2rem;">
+          <button type="button" class="btn-sync" style="flex: 1; padding: 12px; font-size: 0.95rem; justify-content: center; border-radius: 14px;" onclick="testApiConnection()">
+            <i data-lucide="sparkles" id="test-icon"></i>
+            ทดสอบการเชื่อมต่อ
+          </button>
+          <button type="submit" class="btn-submit" style="flex: 1; margin: 0; box-shadow: none;">
+            <i data-lucide="save" style="width: 18px; height: 18px;"></i>
+            บันทึกการตั้งค่า
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST ALERTS OVERLAY -->
+  <div id="toast-container"></div>
+
+  <!-- ─── CORE JAVASCRIPT LOGIC ───────────────────────────── -->
+  <script>
+    // ─── THEME INITIALIZATION (เรียกทันทีเพื่อป้องกันแสงวาบขณะโหลด) ───────
+    (function() {
+      const savedTheme = localStorage.getItem('aisFix_theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+
+    // ─── STATE MANAGEMENT ──────────────────────────────────
+    const STATE = {
+      currentUser: null,  // { username, name }
+      apiUrl: localStorage.getItem('aisFix_api_url') || 'https://script.google.com/macros/s/AKfycbxKx2OBL7kC1450n0fSSTzY9oZaViSefZCqisKcecM66QWANw3OZYxV6NfgC3-hCYvyOQ/exec',
+      history: []
+    };
+
+    // ─── THEME CONTROLS ────────────────────────────────────
+    function initTheme() {
+      const savedTheme = localStorage.getItem('aisFix_theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark-theme');
+        updateThemeIcon('dark');
+      } else {
+        document.documentElement.classList.remove('dark-theme');
+        updateThemeIcon('light');
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark-theme');
+      const currentTheme = isDark ? 'dark' : 'light';
+      localStorage.setItem('aisFix_theme', currentTheme);
+      updateThemeIcon(currentTheme);
+      showToast(`สลับใช้งานธีม ${currentTheme === 'dark' ? 'มืด' : 'สว่าง'} เรียบร้อยแล้ว`, 'info');
+    }
+
+    function updateThemeIcon(theme) {
+      const toggleBtn = document.getElementById('theme-toggle');
+      if (!toggleBtn) return;
+      if (theme === 'dark') {
+        toggleBtn.innerHTML = '<i data-lucide="sun"></i>';
+      } else {
+        toggleBtn.innerHTML = '<i data-lucide="moon"></i>';
+      }
+      lucide.createIcons();
+    }
+
+    // ─── INITIALIZATION ────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+      // ตั้งค่าไอคอนปุ่มท็อกเกิลธีมเริ่มแรก
+      initTheme();
+
+      // โหลดไอเดีย Lucide Icons
+      lucide.createIcons();
+      
+      // ตรวจสอบว่าตั้งค่า API แล้วหรือยัง
+      checkApiConfigStatus();
+      
+      // ตรวจสอบ Session ที่เซฟไว้
+      const savedUser = sessionStorage.getItem('aisFix_user');
+      if (savedUser) {
+        STATE.currentUser = JSON.parse(savedUser);
+        showScreen('dashboard-screen');
+        updateUserDisplay();
+        loadUserHistory();
+      } else {
+        showScreen('auth-screen');
+      }
+    });
+
+    // ─── TOAST NOTIFICATION UTILS ──────────────────────────
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      let icon = 'info';
+      if (type === 'success') icon = 'check-circle';
+      if (type === 'error') icon = 'alert-triangle';
+      if (type === 'warning') icon = 'alert-circle';
+      
+      toast.innerHTML = `
+        <i class="lucide-${icon}" style="flex-shrink: 0;"></i>
+        <div style="font-size: 0.9rem; font-weight: 500;">${message}</div>
+      `;
+      
+      container.appendChild(toast);
+      lucide.createIcons({ attrs: { class: 'lucide-icon' } });
+      
+      // ลบอัตโนมัติหลัง 3.5 วินาที
+      setTimeout(() => {
+        toast.style.animation = 'toastOut 0.3s forwards';
+        toast.addEventListener('animationend', () => toast.remove());
+      }, 3500);
+    }
+
+    // เพิ่มแอนิเมชันสำหรับ Toast ออกในสไตล์ CSS
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = `
+      @keyframes toastOut {
+        to {
+          transform: translateY(-20px);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+
+    // ─── SCREEN & NAVIGATION CONTROL ───────────────────────
+    function showScreen(screenId) {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('dashboard-screen').style.display = 'none';
+      
+      const target = document.getElementById(screenId);
+      if (screenId === 'dashboard-screen') {
+        target.style.display = 'block';
+        setTimeout(() => target.style.opacity = '1', 50);
+      } else {
+        target.style.display = 'block';
+      }
+    }
+
+    function switchTab(panelId, btnElement) {
+      // ลบคลาสแอคทีฟจากปุ่มแท็บทั้งหมด
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      // ซ่อนแผงแท็บทั้งหมด
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+      
+      // เพิ่มความแอคทีฟให้ปุ่มและแผงที่คลิก
+      btnElement.classList.add('active');
+      document.getElementById(panelId).classList.add('active');
+      
+      // คืนค่ารูปแบบไอคอนใหม่
+      lucide.createIcons();
+      
+      // ถ้ากดสลับมาแท็บประวัติ ให้ดึงข้อมูลมาแสดงผลใหม่
+      if (panelId === 'f1-panel') {
+        loadUserHistory();
+      }
+    }
+
+    function checkApiConfigStatus() {
+      const banner = document.getElementById('setup-banner-alert');
+      if (!STATE.apiUrl) {
+        banner.style.display = 'flex';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    function updateUserDisplay() {
+      if (STATE.currentUser) {
+        document.getElementById('user-display-name').textContent = STATE.currentUser.name;
+      }
+    }
+
+    // ─── MODAL CONTROLS ────────────────────────────────────
+    function openSettingsModal() {
+      document.getElementById('api-url').value = STATE.apiUrl;
+      document.getElementById('settings-modal').classList.add('active');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settings-modal').classList.remove('active');
+    }
+
+    function closeSettingsModalOnOverlay(e) {
+      if (e.target.id === 'settings-modal') {
+        closeSettingsModal();
+      }
+    }
+
+    // ─── AUTHENTICATION LOGIC ──────────────────────────────
+    function togglePasswordVisibility() {
+      const passInput = document.getElementById('password');
+      const passToggle = document.getElementById('password-toggle');
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        passToggle.setAttribute('data-lucide', 'eye-off');
+      } else {
+        passInput.type = 'password';
+        passToggle.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      
+      // ตรวจสอบว่าตั้งค่า API หรือยัง
+      if (!STATE.apiUrl) {
+        showToast('กรุณาคลิกปุ่มตั้งค่า API ก่อนเข้าสู่ระบบ', 'warning');
+        openSettingsModal();
+        return;
+      }
+
+      const userEl = document.getElementById('username');
+      const passEl = document.getElementById('password');
+      const btn = document.getElementById('login-submit');
+      const btnText = document.getElementById('login-btn-text');
+      const btnIcon = document.getElementById('login-btn-icon');
+      
+      const payload = {
+        action: 'login',
+        username: userEl.value.trim(),
+        password: passEl.value.trim()
+      };
+
+      // เปลี่ยน UI เป็นสถานะกำลังโหลด
+      btn.disabled = true;
+      btnText.textContent = 'กำลังยืนยันตัวตน...';
+      btnIcon.setAttribute('data-lucide', 'refresh-cw');
+      btnIcon.classList.add('spinner');
+      lucide.createIcons();
+
+      try {
+        // ใช้ text/plain เพื่อเลี่ยงการตรวจ CORS Preflight จากเบราว์เซอร์
+        const response = await fetch(STATE.apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'ok') {
+          STATE.currentUser = data.user;
+          sessionStorage.setItem('aisFix_user', JSON.stringify(data.user));
+          
+          showToast(`ยินดีต้อนรับคุณ ${data.user.name} เข้าสู่ระบบ`, 'success');
+          showScreen('dashboard-screen');
+          updateUserDisplay();
+          
+          // เคลียร์ฟอร์ม
+          userEl.value = '';
+          passEl.value = '';
+          
+          loadUserHistory();
+        } else {
+          showToast(data.message || 'ข้อมูลเข้าสู่ระบบไม่ถูกต้อง', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('ไม่สามารถเชื่อมต่อกับฐานข้อมูลได้ กรุณาเช็ก API URL หรืออินเทอร์เน็ต', 'error');
+      } finally {
+        // คืนค่า UI ปุ่ม
+        btn.disabled = false;
+        btnText.textContent = 'เข้าสู่ระบบ';
+        btnIcon.setAttribute('data-lucide', 'log-in');
+        btnIcon.classList.remove('spinner');
+        lucide.createIcons();
+      }
+    }
+
+    function handleLogout() {
+      STATE.currentUser = null;
+      sessionStorage.removeItem('aisFix_user');
+      showToast('ออกจากระบบเรียบร้อยแล้ว', 'success');
+      showScreen('auth-screen');
+    }
+
+    // ─── API SETTINGS LOGIC ────────────────────────────────
+    function saveSettings(e) {
+      e.preventDefault();
+      const urlInput = document.getElementById('api-url').value.trim();
+      
+      STATE.apiUrl = urlInput;
+      localStorage.setItem('aisFix_api_url', urlInput);
+      
+      checkApiConfigStatus();
+      closeSettingsModal();
+      showToast('บันทึกการตั้งค่าการเชื่อมต่อ API เรียบร้อยแล้ว', 'success');
+    }
+
+    async function testApiConnection() {
+      const urlInput = document.getElementById('api-url').value.trim();
+      if (!urlInput) {
+        showToast('กรุณากรอก URL ก่อนทดสอบ', 'warning');
+        return;
+      }
+
+      const icon = document.getElementById('test-icon');
+      icon.setAttribute('data-lucide', 'refresh-cw');
+      icon.classList.add('spinner');
+      lucide.createIcons();
+
+      try {
+        // ทดสอบส่ง Get Action โง่ๆ ไปเช็กการตอบรับ
+        const response = await fetch(`${urlInput}?action=getUserData&username=test_check_system`);
+        const data = await response.json();
+        
+        if (data.status === 'ok') {
+          showToast('เชื่อมต่อ API สำเร็จ! ฐานข้อมูลทำงานเป็นปกติ', 'success');
+        } else {
+          showToast('รับผลลัพธ์แปลกๆ จากสคริปต์: ' + (data.message || 'ไม่มี'), 'warning');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('ไม่สามารถเชื่อมต่อได้: ตรวจสอบ URL หรือต้องตั้งค่าสิทธิ์ให้เข้าถึงแบบ "Anyone" ใน Apps Script', 'error');
+      } finally {
+        icon.setAttribute('data-lucide', 'sparkles');
+        icon.classList.remove('spinner');
+        lucide.createIcons();
+      }
+    }
+
+    // ─── F1: INPUT 10-DIGIT RECORD LOGIC ───────────────────
+    function validateDigitInput(input) {
+      // กรองเอาเฉพาะตัวเลขเท่านั้น
+      let val = input.value.replace(/\D/g, '');
+      
+      // จำกัด 10 หลัก
+      if (val.length > 10) val = val.substring(0, 10);
+      input.value = val;
+
+      const clearBtn = document.getElementById('digit-clear');
+      if (val.length > 0) {
+        clearBtn.style.display = 'block';
+      } else {
+        clearBtn.style.display = 'none';
+      }
+
+      // นับหลักและแสดงผล
+      document.getElementById('digit-count-label').textContent = `ป้อนแล้ว: ${val.length} / 10 หลัก`;
+
+      const submitBtn = document.getElementById('record-submit');
+      const statusInd = document.getElementById('validation-status');
+
+      if (val.length === 10) {
+        submitBtn.disabled = false;
+        statusInd.className = 'validation-status valid';
+        statusInd.innerHTML = '<i data-lucide="check-circle" style="width: 14px; height: 14px;"></i> ถูกต้องพร้อมบันทึก';
+      } else {
+        submitBtn.disabled = true;
+        statusInd.className = 'validation-status invalid';
+        statusInd.innerHTML = '<i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i> ยังไม่ครบ 10 หลัก';
+      }
+      lucide.createIcons();
+    }
+
+    function clearDigitInput() {
+      const input = document.getElementById('digit-input');
+      input.value = '';
+      validateDigitInput(input);
+      input.focus();
+    }
+
+    async function handleRecordSubmit(e) {
+      e.preventDefault();
+      
+      const digitInput = document.getElementById('digit-input');
+      const digitVal = digitInput.value.trim();
+      
+      if (digitVal.length !== 10) {
+        showToast('ข้อมูลต้องเป็นตัวเลข 10 หลักเท่านั้น', 'error');
+        return;
+      }
+
+      if (!STATE.apiUrl || !STATE.currentUser) {
+        showToast('ข้อมูลระบบไม่พร้อมกรุณาล็อกอินใหม่หรือเชื่อมโยง API', 'error');
+        return;
+      }
+
+      const submitBtn = document.getElementById('record-submit');
+      const btnText = document.getElementById('record-btn-text');
+      const btnIcon = document.getElementById('record-btn-icon');
+
+      // ตั้งค่า UI โหลด
+      submitBtn.disabled = true;
+      btnText.textContent = 'กำลังอัปเดตชีต...';
+      btnIcon.setAttribute('data-lucide', 'refresh-cw');
+      btnIcon.classList.add('spinner');
+      lucide.createIcons();
+
+      const payload = {
+        action: 'addData',
+        username: STATE.currentUser.username,
+        digitNumber: digitVal
+      };
+
+      try {
+        const response = await fetch(STATE.apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'ok') {
+          showToast(`บันทึกตัวเลข ${digitVal} สำเร็จ!`, 'success');
+          clearDigitInput();
+          // โหลดประวัติใหม่
+          loadUserHistory();
+        } else {
+          showToast(data.message || 'บันทึกผิดพลาด', 'error');
+          submitBtn.disabled = false;
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('เชื่อมต่อล้มเหลว กรุณาตรวจสอบอินเทอร์เน็ตและสิทธิ์ของชีต', 'error');
+        submitBtn.disabled = false;
+      } finally {
+        btnText.textContent = 'บันทึกลง Google Sheet';
+        btnIcon.setAttribute('data-lucide', 'arrow-right-circle');
+        btnIcon.classList.remove('spinner');
+        lucide.createIcons();
+      }
+    }
+
+    // ─── LOAD USER RECORDS HISTORY ─────────────────────────
+    async function loadUserHistory() {
+      if (!STATE.apiUrl || !STATE.currentUser) return;
+
+      const tbody = document.getElementById('history-tbody');
+      const empty = document.getElementById('history-empty');
+      const loading = document.getElementById('history-loading');
+      const table = document.getElementById('history-table');
+      const syncIcon = document.getElementById('sync-icon');
+
+      // แสดงการโหลด
+      tbody.innerHTML = '';
+      table.style.display = 'none';
+      empty.style.display = 'none';
+      loading.style.display = 'flex';
+      
+      syncIcon.classList.add('spinner');
+      lucide.createIcons();
+
+      try {
+        const url = `${STATE.apiUrl}?action=getUserData&username=${encodeURIComponent(STATE.currentUser.username)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        loading.style.display = 'none';
+
+        if (data.status === 'ok' && data.data && data.data.length > 0) {
+          STATE.history = data.data;
+          
+          // เรนเดอร์ข้อมูลลงตาราง
+          let rowsHtml = '';
+          data.data.forEach((item, index) => {
+            rowsHtml += `
+              <tr>
+                <td>#${item.id || (data.data.length - index)}</td>
+                <td>
+                  <span class="history-number">${formatDigitNumber(item.digitNumber)}</span>
+                </td>
+                <td class="history-timestamp">${item.timestamp}</td>
+                <td>
+                  <span class="status-badge">
+                    <i class="lucide-check" style="width: 12px; height: 12px;"></i>
+                    บันทึกแล้ว
+                  </span>
+                </td>
+              </tr>
+            `;
+          });
+          
+          tbody.innerHTML = rowsHtml;
+          table.style.display = 'table';
+        } else {
+          empty.style.display = 'flex';
+        }
+      } catch (err) {
+        console.error(err);
+        loading.style.display = 'none';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--danger); font-weight: 500;">ดึงข้อมูลล้มเหลว ตรวจสอบสิทธิ์หรือสลับแท็บใหม่</td></tr>';
+        table.style.display = 'table';
+      } finally {
+        syncIcon.classList.remove('spinner');
+        lucide.createIcons();
+      }
+    }
+
+    // HELPER: จัดหน้าตาตัวเลข 10 หลักให้เด่นและชัดเจน (เช่น 081-234-5678 หรือ 0-8123-4567-8 เพื่อการอ่านที่สะดวก)
+    function formatDigitNumber(numberStr) {
+      let cleaned = String(numberStr).trim();
+      if (cleaned.length === 9) cleaned = '0' + cleaned;
+      if (cleaned.length !== 10) return cleaned;
+      // รูปแบบ XXX-XXX-XXXX
+      return `${cleaned.substr(0, 3)}-${cleaned.substr(3, 3)}-${cleaned.substr(6, 4)}`;
+    }
+
+    // ─── F2: MULTI-LINE CHECK & COMPARISON LOGIC ───────────
+    function clearF2Textarea() {
+      document.getElementById('f2-textarea').value = '';
+      document.getElementById('f2-results-unchecked').style.display = 'flex';
+      document.getElementById('f2-results-checked').style.display = 'none';
+      showToast('ล้างค่ากล่องข้อความเรียบร้อยแล้ว', 'info');
+    }
+
+    async function handleF2Check(e) {
+      if (e) e.preventDefault();
+
+      const textarea = document.getElementById('f2-textarea');
+      const rawText = textarea.value;
+      if (!rawText.trim()) {
+        showToast('กรุณากรอกหรือวางข้อมูลที่ต้องการตรวจสอบ', 'warning');
+        return;
+      }
+
+      const btn = document.getElementById('f2-submit');
+      const btnText = document.getElementById('f2-btn-text');
+      const btnIcon = document.getElementById('f2-btn-icon');
+
+      btn.disabled = true;
+      btnText.textContent = 'กำลังซิงก์ประวัติล่าสุด...';
+      btnIcon.setAttribute('data-lucide', 'refresh-cw');
+      btnIcon.classList.add('spinner');
+      lucide.createIcons();
+
+      // ดึงประวัติล่าสุดจากชีตก่อนทำเปรียบเทียบ
+      await loadUserHistoryForF2(rawText);
+    }
+
+    async function loadUserHistoryForF2(rawText) {
+      if (!STATE.apiUrl || !STATE.currentUser) {
+        showToast('ข้อมูลสิทธิ์ไม่ถูกต้อง กรุณาล็อกอินใหม่', 'error');
+        resetF2Button();
+        return;
+      }
+
+      try {
+        const url = `${STATE.apiUrl}?action=getUserData&username=${encodeURIComponent(STATE.currentUser.username)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.status === 'ok') {
+          STATE.history = data.data;
+          
+          // อัปเดตตารางประวัติในแท็บ 1 ด้วย
+          const tbody = document.getElementById('history-tbody');
+          const table = document.getElementById('history-table');
+          const empty = document.getElementById('history-empty');
+          
+          if (tbody) {
+            tbody.innerHTML = '';
+            if (data.data.length > 0) {
+              let rowsHtml = '';
+              data.data.forEach((item, index) => {
+                rowsHtml += `
+                  <tr>
+                    <td>#${item.id || (data.data.length - index)}</td>
+                    <td><span class="history-number">${formatDigitNumber(item.digitNumber)}</span></td>
+                    <td class="history-timestamp">${item.timestamp}</td>
+                    <td>
+                      <span class="status-badge">
+                        <i class="lucide-check" style="width: 12px; height: 12px;"></i>
+                        บันทึกแล้ว
+                      </span>
+                    </td>
+                  </tr>
+                `;
+              });
+              tbody.innerHTML = rowsHtml;
+              table.style.display = 'table';
+              empty.style.display = 'none';
+            } else {
+              table.style.display = 'none';
+              empty.style.display = 'flex';
+            }
+          }
+
+          // เริ่มทำการเปรียบเทียบข้อมูลที่ป้อนเข้ามา
+          compareAndRenderF2(rawText);
+        } else {
+          showToast('ไม่สามารถอัปเดตประวัติจากชีตได้: ' + (data.message || ''), 'error');
+          resetF2Button();
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('การซิงก์ข้อมูลล้มเหลว ดำเนินการเปรียบเทียบด้วยข้อมูลที่แคชไว้ชั่วคราว', 'warning');
+        compareAndRenderF2(rawText);
+      }
+    }
+
+    function resetF2Button() {
+      const btn = document.getElementById('f2-submit');
+      const btnText = document.getElementById('f2-btn-text');
+      const btnIcon = document.getElementById('f2-btn-icon');
+      
+      btn.disabled = false;
+      btnText.textContent = 'ตรวจสอบและเปรียบเทียบ';
+      btnIcon.setAttribute('data-lucide', 'sparkles');
+      btnIcon.classList.remove('spinner');
+      lucide.createIcons();
+    }
+
+    function compareAndRenderF2(text) {
+      // 1. นำข้อมูลเบอร์ในชีตของผู้ใช้รายนี้ทั้งหมดมาเก็บใน Map เพื่อความรวดเร็วในการค้นหาแบบ O(1)
+      const dbNumbersMap = {}; // digitNumber -> timestamp
+      STATE.history.forEach(item => {
+        let num = String(item.digitNumber).trim();
+        if (num.length === 9) num = '0' + num;
+        dbNumbersMap[num] = item.timestamp;
+      });
+
+      // ทำความสะอาดและแปลงรูปแบบเบอร์โทรที่มีขีดคั่นหรือเว้นวรรคให้เป็นเลข 10 หลักติดกัน เพื่อรองรับรูปแบบที่ยืดหยุ่น เช่น XXX-XXX-XXXX หรือ X-XXXX-XXXX-X
+      let processedText = text
+        .replace(/\b(\d{3})[\s-]*(\d{3})[\s-]*(\d{4})\b/g, '$1$2$3')
+        .replace(/\b(\d)[\s-]*(\d{4})[\s-]*(\d{4})[\s-]*(\d)\b/g, '$1$2$3$4');
+
+      // 2. ใช้ Regex ค้นหาเบอร์ 10 หลักที่มีในข้อมูลที่ป้อนเข้ามาทั้งหมด
+      const regex = /(\d{10})/g;
+      const numbers = [];
+      const indices = [];
+      let match;
+
+      while ((match = regex.exec(processedText)) !== null) {
+        numbers.push(match[1]);
+        indices.push(match.index);
+      }
+
+      if (numbers.length === 0) {
+        showToast('ไม่พบตัวเลข 10 หลักใดๆ ในข้อมูลที่วางลงไป', 'warning');
+        resetF2Button();
+        
+        document.getElementById('f2-results-unchecked').style.display = 'flex';
+        document.getElementById('f2-results-checked').style.display = 'none';
+        return;
+      }
+
+      // 3. หั่นแบ่งแยกแต่ละชุดข้อมูล
+      const parsedRecords = [];
+      for (let i = 0; i < numbers.length; i++) {
+        const start = indices[i];
+        // ขอบเขตข้อมูลจะเริ่มจากตัวเลขนั้นไปสิ้นสุดก่อนเริ่มตัวเลขของชุดถัดไป
+        const end = (i + 1 < numbers.length) ? indices[i + 1] : processedText.length;
+        const fullSlice = processedText.substring(start, end).trim();
+
+        // ดึงรายละเอียดชื่อ/ข้อมูลหลังจากตัวเลข 10 หลัก
+        const details = fullSlice.substring(10).trim();
+
+        parsedRecords.push({
+          digitNumber: numbers[i],
+          details: details
+        });
+      }
+
+      // 4. คัดแยกว่าเบอร์ไหนตรงกับในชีตบ้าง
+      const matched = [];
+      const unmatched = [];
+
+      parsedRecords.forEach(rec => {
+        if (dbNumbersMap[rec.digitNumber]) {
+          rec.timestamp = dbNumbersMap[rec.digitNumber];
+          matched.push(rec);
+        } else {
+          unmatched.push(rec);
+        }
+      });
+
+      // 5. แสดงผลบน UI
+      document.getElementById('f2-results-unchecked').style.display = 'none';
+      document.getElementById('f2-results-checked').style.display = 'flex';
+
+      // อัปเดตตัวเลขสถิติ
+      document.getElementById('f2-stat-total').textContent = parsedRecords.length;
+      document.getElementById('f2-stat-matched').textContent = matched.length;
+      document.getElementById('f2-stat-unmatched').textContent = unmatched.length;
+
+      // อัปเดต Progress Bar
+      const percent = parsedRecords.length > 0 ? Math.round((matched.length / parsedRecords.length) * 100) : 0;
+      document.getElementById('f2-progress').style.width = percent + '%';
+      document.getElementById('f2-progress-percent').textContent = percent + '%';
+
+      // เรนเดอร์รายการที่ "ตรงกัน"
+      const matchedList = document.getElementById('f2-matched-list');
+      if (matched.length > 0) {
+        let matchedHtml = '';
+        matched.forEach(item => {
+          matchedHtml += `
+            <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; position: relative; overflow: hidden;">
+              <div style="position: absolute; right: 0; top: 0; width: 4px; height: 100%; background: var(--primary);"></div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-family: var(--font-outfit); font-weight: 700; font-size: 1.15rem; color: var(--primary); letter-spacing: 0.05em;">
+                  ${formatDigitNumber(item.digitNumber)}
+                </span>
+                <span class="status-badge" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3);">
+                  <i class="lucide-shield-check" style="width: 12px; height: 12px; display: inline-block;"></i> ตรงกัน
+                </span>
+              </div>
+              <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-main); white-space: pre-line; opacity: 0.9; line-height: 1.5;">
+                ${item.details || 'ไม่มีข้อมูลชื่อ/รายละเอียด'}
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+                <i class="lucide-calendar" style="width: 12px; height: 12px;"></i> บันทึกในชีตเมื่อ: ${item.timestamp}
+              </div>
+            </div>
+          `;
+        });
+        matchedList.innerHTML = matchedHtml;
+      } else {
+        matchedList.innerHTML = `
+          <div class="empty-state" style="padding: 2rem 1rem;">
+            <i class="lucide-info" style="font-size: 1.8rem; color: var(--text-muted); opacity: 0.5;"></i>
+            <p style="font-size: 0.9rem;">ไม่พบหมายเลขใดในชุดข้อมูลนี้ที่ตรงกับฐานข้อมูลของคุณ</p>
+          </div>
+        `;
+      }
+
+      // เรนเดอร์รายการที่ "ไม่ตรงกัน"
+      const unmatchedList = document.getElementById('f2-unmatched-list');
+      const unmatchedWrapper = document.getElementById('f2-unmatched-wrapper');
+      
+      if (unmatched.length > 0) {
+        unmatchedWrapper.style.display = 'block';
+        let unmatchedHtml = '';
+        unmatched.forEach(item => {
+          unmatchedHtml += `
+            <div style="background: var(--stat-card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; opacity: 0.75;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-family: var(--font-outfit); font-weight: 600; font-size: 1.05rem; color: var(--text-muted); letter-spacing: 0.05em;">
+                  ${formatDigitNumber(item.digitNumber)}
+                </span>
+                <span style="font-size: 0.75rem; color: #f87171; font-weight: 600; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 2px 6px; border-radius: 4px;">
+                  ไม่มีในชีต
+                </span>
+              </div>
+              <div style="font-size: 0.85rem; color: var(--text-muted); white-space: pre-line; line-height: 1.5;">
+                ${item.details || 'ไม่มีข้อมูลชื่อ/รายละเอียด'}
+              </div>
+            </div>
+          `;
+        });
+        unmatchedList.innerHTML = unmatchedHtml;
+      } else {
+        unmatchedWrapper.style.display = 'none';
+      }
+
+      // คืนค่าปุ่มตรวจสอบ
+      resetF2Button();
+      showToast(`เปรียบเทียบข้อมูลเสร็จสิ้น! พบรายการตรงกัน ${matched.length} รายการ`, 'success');
+    }
+
+  </script>
+</body>
+</html>
