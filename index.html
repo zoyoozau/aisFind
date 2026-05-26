@@ -51,6 +51,13 @@
       --btn-icon-bg: rgba(15, 23, 42, 0.04);
       --btn-icon-bg-hover: rgba(15, 23, 42, 0.08);
 
+      /* New light mode popup variables */
+      --toast-bg: rgba(255, 255, 255, 0.98);
+      --toast-color: #0f172a;
+      --toast-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+      --bg-modal: rgba(255, 255, 255, 0.98);
+      --modal-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
+
       --font-outfit: 'Outfit', sans-serif;
       --font-inter: 'Inter', sans-serif;
     }
@@ -84,6 +91,13 @@
       --tab-active-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       --btn-icon-bg: rgba(255, 255, 255, 0.05);
       --btn-icon-bg-hover: rgba(255, 255, 255, 0.1);
+      
+      /* Dark mode popup variables */
+      --toast-bg: rgba(15, 23, 42, 0.9);
+      --toast-color: #f8fafc;
+      --toast-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      --bg-modal: rgba(15, 23, 42, 0.95);
+      --modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
     }
 
     * {
@@ -149,33 +163,32 @@
     }
 
     .toast {
-      background: rgba(15, 23, 42, 0.9);
+      background: var(--toast-bg);
       border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 16px;
       display: flex;
       align-items: center;
       gap: 12px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      box-shadow: var(--toast-shadow);
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       transform: translateY(20px);
       opacity: 0;
       animation: toastIn 0.3s forwards;
+      color: var(--toast-color);
     }
 
     .toast.success {
       border-left: 4px solid var(--primary);
-      color: var(--text-main);
     }
 
     .toast.error {
       border-left: 4px solid var(--danger);
-      color: var(--text-main);
     }
 
     .toast.warning {
       border-left: 4px solid var(--warning);
-      color: var(--text-main);
     }
 
     @keyframes toastIn {
@@ -842,9 +855,9 @@
     .modal-card {
       max-width: 500px;
       width: calc(100% - 32px);
-      background: rgba(15, 23, 42, 0.95);
+      background: var(--bg-modal);
       border: 1px solid var(--border-color);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      box-shadow: var(--modal-shadow);
       border-radius: 24px;
       padding: 2rem;
       transform: scale(0.9);
