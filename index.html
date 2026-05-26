@@ -1224,7 +1224,6 @@
               <table class="history-table" id="history-table">
                 <thead>
                   <tr>
-                    <th># ID</th>
                     <th>หมายเลข 10 หลัก</th>
                     <th>วันที่ - เวลาบันทึก</th>
                     <th>สถานะ</th>
@@ -1873,7 +1872,6 @@
           data.data.forEach((item, index) => {
             rowsHtml += `
               <tr>
-                <td>#${item.id || (data.data.length - index)}</td>
                 <td>
                   <span class="history-number">${formatDigitNumber(item.digitNumber)}</span>
                 </td>
@@ -1997,7 +1995,6 @@
               data.data.forEach((item, index) => {
                 rowsHtml += `
                   <tr>
-                    <td>#${item.id || (data.data.length - index)}</td>
                     <td><span class="history-number">${formatDigitNumber(item.digitNumber)}</span></td>
                     <td class="history-timestamp">${formatThaiDateTime(item.timestamp)}</td>
                     <td>
