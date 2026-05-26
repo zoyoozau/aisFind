@@ -1284,10 +1284,14 @@
         width: 100%;
         height: 100%;
         padding: 12px 16px;
-        background: var(--bg-panel-card) !important; /* ใช้สีทึบของแผงการ์ดเพื่อบดบังปุ่มสีแดง */
+        background: #ffffff !important; /* สีขาวทึบ 100% ป้องกันสีแดงซึมทะลุผ่าน */
         z-index: 2;
         transition: transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);
         box-sizing: border-box;
+      }
+      
+      html.dark-theme .swipe-wrapper {
+        background: #111827 !important; /* สีน้ำเงินเข้มทึบ 100% ในธีมมืด ป้องกันสีแดงซึมทะลุผ่าน */
       }
       
       .swipe-info {
